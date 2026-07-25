@@ -9,9 +9,12 @@
      ============================================================ -->
 <title>Mapa de Incendios en España y Portugal en Tiempo Real | IncendiosES</title>
 <meta name="description" content="Mapa en directo de incendios forestales en España y Portugal con datos satelitales de la NASA (VIIRS/MODIS). Detección de nuevos focos, dirección del humo según el viento real y alertas por comunidad autónoma.">
-<meta name="keywords" content="incendios España hoy, mapa incendios forestales, incendios Portugal, fuego en directo, humo incendio, IFN, VIIRS NASA España, incendios comunidad autónoma">
+<meta name="keywords" content="incendios España hoy, mapa incendios forestales, incendios Portugal, fuego en directo, humo incendio, IFN, VIIRS NASA España, incendios comunidad autónoma, incendios activos hoy, mapa incendios tiempo real">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.incendiosenespana.es/">
+
+<!-- Favicon SVG inline (🔥) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -22,18 +25,21 @@
 <meta property="og:locale" content="es_ES">
 <meta property="og:locale:alternate" content="pt_PT">
 <meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mapa de Incendios en España y Portugal en Tiempo Real">
 <meta name="twitter:description" content="Focos activos por satélite, nuevos incendios y previsión de humo por viento real.">
+<meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
 
 <!-- hreflang: preparado para versión portuguesa futura (silo geo-SEO) -->
 <link rel="alternate" hreflang="es" href="https://www.incendiosenespana.es/" />
 <link rel="alternate" hreflang="pt" href="https://www.incendiosenespana.es/pt/" />
 <link rel="alternate" hreflang="x-default" href="https://www.incendiosenespana.es/" />
 
-<!-- JSON-LD: WebSite + Organization -->
+<!-- JSON-LD: WebSite + SearchAction -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -46,6 +52,31 @@
     "target": "https://www.incendiosenespana.es/buscar?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
+}
+</script>
+
+<!-- JSON-LD: WebApplication (mapa interactivo) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "IncendiosES — Mapa de Incendios",
+  "url": "https://www.incendiosenespana.es/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "description": "Aplicación web de mapa interactivo de incendios forestales en España y Portugal con datos satelitales NASA FIRMS en tiempo real.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "featureList": [
+    "Detección satelital VIIRS/MODIS",
+    "Dirección estimada del humo",
+    "Alertas de nuevos focos",
+    "Vista satélite",
+    "Búsqueda por localidad"
+  ]
 }
 </script>
 
@@ -69,16 +100,52 @@
       "@type": "Question",
       "name": "¿Cómo se calcula la dirección del humo?",
       "acceptedAnswer": { "@type": "Answer", "text": "A partir de la velocidad y dirección del viento en tiempo real sobre el punto del incendio. Es una estimación orientativa, no un modelo oficial de dispersión de humo." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué significa cada color en el mapa de incendios?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Los puntos rojos indican focos activos confirmados por satélite. Los puntos amarillos son focos detectados en la última hora (nuevos). El cono azulado muestra la dirección estimada del humo según el viento real." }
     }
   ]
 }
 </script>
 
+<!-- ============================================================
+     Google Consent Mode v2 — DEBE ir ANTES de cualquier otro
+     script de Google (Analytics, AdSense, etc.)
+     Compatible con TCF v2.2 y RGPD.
+     ============================================================ -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+gtag('set', 'ads_data_redaction', true);
+gtag('set', 'url_passthrough', true);
+</script>
+
+<!-- Preconnects críticos para rendimiento -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://api.open-meteo.com">
+<link rel="dns-prefetch" href="https://gibs.earthdata.nasa.gov">
 
+<!-- Google Fonts — non-blocking con media="print" swap -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
+
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<!-- MarkerCluster CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 
 <!-- ============================================================
      AdSense — pega aquí tu script una vez tengas la cuenta aprobada:
@@ -101,6 +168,7 @@
   --font-display:'Space Grotesk',system-ui,sans-serif;
   --font-body:'Inter',system-ui,sans-serif;
   --font-mono:'IBM Plex Mono',monospace;
+  --topbar-h:56px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -116,37 +184,60 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.01em;}
 
 /* ---------- Barra superior ---------- */
 .topbar{
-  display:flex;align-items:center;gap:20px;
-  padding:14px 24px;
+  display:flex;align-items:center;gap:16px;
+  padding:12px 20px;
   border-bottom:1px solid var(--panel-border);
   background:linear-gradient(180deg, rgba(16,19,26,0.98), rgba(16,19,26,0.92));
   position:sticky;top:0;z-index:1000;
   flex-wrap:wrap;
+  height:var(--topbar-h);
 }
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
 .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--fire);box-shadow:0 0 0 4px rgba(255,90,54,.18);animation:pulse 2s infinite;}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,54,.35);}70%{box-shadow:0 0 0 10px rgba(255,90,54,0);}100%{box-shadow:0 0 0 0 rgba(255,90,54,0);}}
 
 .ticker{
-  font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);
-  display:flex;gap:18px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted);
+  display:flex;gap:16px;flex-wrap:wrap;
 }
 .ticker b{color:var(--fire-glow);font-weight:600;}
 
 .search-box{margin-left:auto;display:flex;gap:8px;}
 .search-box input{
   background:var(--bg-elevated);border:1px solid var(--panel-border);color:var(--text);
-  padding:8px 12px;border-radius:8px;font-family:var(--font-body);font-size:.85rem;min-width:220px;
+  padding:8px 12px;border-radius:8px;font-family:var(--font-body);font-size:.85rem;min-width:200px;
 }
+.search-box input::placeholder{color:var(--text-muted);}
 .search-box button{
   background:var(--fire);border:none;color:#161616;font-weight:600;
   padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;
+  transition:background .2s;
+}
+.search-box button:hover{background:#ff7054;}
+
+/* ---------- H1 hero ---------- */
+.hero-h1{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:800;
+  text-align:center;pointer-events:none;
+  font-size:1rem;font-weight:600;color:rgba(234,237,243,.7);
+  text-shadow:0 2px 12px rgba(0,0,0,.6);
+  max-width:500px;
 }
 
 /* ---------- Layout del mapa ---------- */
 .map-wrap{position:relative;height:78vh;min-height:520px;width:100%;}
 #map{height:100%;width:100%;background:#0b0d12;}
 .leaflet-container{font-family:var(--font-body);}
+
+/* MarkerCluster custom theme */
+.marker-cluster-small{background:rgba(255,90,54,.25);}
+.marker-cluster-small div{background:var(--fire);}
+.marker-cluster-medium{background:rgba(255,176,32,.25);}
+.marker-cluster-medium div{background:var(--fire-glow);}
+.marker-cluster-large{background:rgba(255,210,60,.25);}
+.marker-cluster-large div{background:var(--alert);}
+.marker-cluster div{color:#161616;font-family:var(--font-mono);font-weight:700;font-size:.75rem;width:32px;height:32px;margin-left:4px;margin-top:4px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.marker-cluster{border-radius:50%;}
 
 .floating-panel{
   position:absolute;z-index:900;
@@ -156,7 +247,7 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.01em;}
   border-radius:14px;
   box-shadow:0 12px 30px rgba(0,0,0,.35);
 }
-.panel-filtros{top:16px;left:16px;padding:16px;width:220px;}
+.panel-filtros{top:16px;left:16px;padding:16px;width:220px;transition:transform .3s ease,opacity .3s ease;}
 .panel-filtros h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px;}
 .filtro-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:.85rem;border-bottom:1px solid var(--panel-border);}
 .filtro-row:last-child{border-bottom:none;}
@@ -169,7 +260,7 @@ input:checked + .slider:before{transform:translateX(15px);}
 
 .panel-detalle{
   bottom:16px;left:16px;padding:18px;width:280px;max-height:46%;overflow-y:auto;
-  display:none;
+  display:none;transition:transform .3s ease;
 }
 .panel-detalle.show{display:block;}
 .panel-detalle h3{font-size:1rem;margin-bottom:4px;}
@@ -202,11 +293,21 @@ input:checked + .slider:before{transform:translateX(15px);}
 .toast.show{display:block;animation:slidein .3s ease;}
 @keyframes slidein{from{transform:translateY(-8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
-.demo-flag{
-  position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;
-  background:rgba(255,210,60,.12);border:1px solid var(--alert);color:var(--alert);
-  font-family:var(--font-mono);font-size:.72rem;padding:5px 12px;border-radius:20px;
+/* ---------- FABs (Floating Action Buttons) ---------- */
+.fab{
+  position:absolute;z-index:900;
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:rgba(23,27,36,.92);backdrop-filter:blur(10px);
+  color:var(--text);font-size:1.2rem;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  border:1px solid var(--panel-border);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s, transform .1s;
 }
+.fab:active{transform:scale(.92);}
+.fab:hover{background:rgba(23,27,36,1);}
+.fab-location{bottom:80px;right:16px;}
+.fab-layers{display:none;}
 
 /* ---------- Contenido SEO bajo el mapa ---------- */
 .content{max-width:1100px;margin:0 auto;padding:60px 24px;}
@@ -221,8 +322,9 @@ input:checked + .slider:before{transform:translateX(15px);}
   background:var(--bg-elevated);border:1px solid var(--panel-border);border-radius:10px;
   padding:12px 14px;font-size:.85rem;text-decoration:none;color:var(--text);
   display:flex;justify-content:space-between;align-items:center;
+  transition:border-color .2s, transform .15s;
 }
-.grid-cca a:hover{border-color:var(--fire);}
+.grid-cca a:hover{border-color:var(--fire);transform:translateY(-1px);}
 .grid-cca .n{font-family:var(--font-mono);color:var(--fire-glow);font-size:.78rem;}
 
 .faq{margin-top:16px;}
@@ -233,10 +335,16 @@ input:checked + .slider:before{transform:translateX(15px);}
 .faq summary{cursor:pointer;font-weight:600;font-family:var(--font-display);font-size:.95rem;}
 .faq p{margin-top:8px;margin-bottom:0;}
 
+/* ---------- Ad slots CLS-safe ---------- */
 .ad-slot{
   border:1px dashed var(--panel-border);border-radius:10px;
-  padding:26px;text-align:center;color:var(--text-muted);font-size:.78rem;
+  text-align:center;color:var(--text-muted);font-size:.78rem;
   font-family:var(--font-mono);margin:34px 0;
+  min-height:90px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.ad-slot-sticky{
+  display:none;
 }
 
 footer{
@@ -248,10 +356,129 @@ footer a{text-decoration:none;color:var(--text-muted);}
 footer a:hover{color:var(--text);}
 .footer-links{display:flex;gap:16px;flex-wrap:wrap;}
 
+/* ---------- Sección de Noticias ---------- */
+.noticias-section{max-width:1100px;margin:0 auto;padding:0 24px 60px;}
+.noticias-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.noticias-header h2{font-size:1.5rem;display:flex;align-items:center;gap:10px;}
+.noticias-header h2 .fire-icon{font-size:1.3rem;animation:pulse-fire 2s infinite;}
+@keyframes pulse-fire{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(1.12);}}
+.noticias-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,90,54,.12);border:1px solid rgba(255,90,54,.3);
+  color:var(--fire);font-family:var(--font-mono);font-size:.72rem;
+  padding:4px 10px;border-radius:20px;font-weight:500;
+}
+.noticias-badge .live-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--fire);
+  animation:pulse 2s infinite;
+}
+
+.noticias-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:16px;
+}
+.noticia-card{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);
+  border-radius:14px;padding:20px;text-decoration:none;color:var(--text);
+  display:flex;flex-direction:column;gap:10px;
+  transition:border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+  position:relative;overflow:hidden;
+}
+.noticia-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--fire),var(--fire-glow),var(--alert));
+  opacity:0;transition:opacity .25s;
+}
+.noticia-card:hover{
+  border-color:var(--fire);transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(255,90,54,.12);
+}
+.noticia-card:hover::before{opacity:1;}
+.noticia-titulo{
+  font-family:var(--font-display);font-weight:600;font-size:.95rem;
+  line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.noticia-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.75rem;color:var(--text-muted);font-family:var(--font-mono);
+  margin-top:auto;gap:8px;
+}
+.noticia-fuente{
+  background:rgba(255,255,255,.06);padding:2px 8px;border-radius:6px;
+  font-size:.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.noticia-fecha{white-space:nowrap;}
+.noticia-arrow{
+  position:absolute;bottom:16px;right:16px;
+  color:var(--text-muted);font-size:1rem;transition:color .25s, transform .25s;
+}
+.noticia-card:hover .noticia-arrow{color:var(--fire);transform:translateX(3px);}
+
+.noticias-loading{
+  text-align:center;padding:40px;color:var(--text-muted);
+  font-family:var(--font-mono);font-size:.85rem;
+}
+.noticias-loading .spinner{
+  display:inline-block;width:24px;height:24px;border:2px solid var(--panel-border);
+  border-top-color:var(--fire);border-radius:50%;animation:spin .8s linear infinite;
+  margin-bottom:10px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.noticias-error{
+  text-align:center;padding:30px;color:var(--text-muted);
+  font-family:var(--font-mono);font-size:.82rem;
+  background:rgba(180,30,30,.08);border:1px solid rgba(200,80,80,.2);
+  border-radius:12px;
+}
+.noticias-error button{
+  margin-top:10px;background:var(--fire);border:none;color:#161616;
+  font-weight:600;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;
+}
+
+/* ---------- Responsive Mobile-First ---------- */
 @media (max-width:760px){
-  .panel-filtros{width:150px;}
-  .panel-detalle{width:220px;}
-  .search-box input{min-width:120px;}
+  .topbar{height:auto;padding:10px 14px;gap:10px;}
+  .ticker{display:none;}
+  .search-box{width:100%;margin-left:0;}
+  .search-box input{min-width:0;flex:1;}
+
+  .map-wrap{height:calc(100vh - 56px);height:calc(100dvh - 56px);min-height:0;}
+
+  .panel-filtros{
+    width:180px;padding:12px;
+    top:auto;bottom:80px;left:16px;
+    transform:translateY(0);opacity:1;
+  }
+  .panel-filtros.collapsed{
+    transform:translateY(20px);opacity:0;pointer-events:none;
+  }
+  .fab-layers{display:flex;bottom:130px;left:16px;}
+
+  .panel-detalle{
+    left:0;bottom:0;width:100%;max-height:45vh;
+    border-radius:14px 14px 0 0;
+    padding:16px 20px;
+  }
+
+  .legend{bottom:auto;top:12px;right:12px;padding:8px 10px;font-size:.7rem;border-radius:10px;}
+
+  .hero-h1{font-size:.82rem;max-width:70vw;top:auto;bottom:58px;}
+
+  .noticias-grid{grid-template-columns:1fr;}
+
+  .ad-slot{min-height:100px;}
+  .ad-slot-sticky{
+    display:block;position:fixed;bottom:0;left:0;right:0;z-index:999;
+    background:var(--bg-elevated);border-top:1px solid var(--panel-border);
+    min-height:50px;text-align:center;
+    font-size:.7rem;color:var(--text-muted);font-family:var(--font-mono);
+    padding:12px;
+  }
 }
 </style>
 </head>
@@ -268,7 +495,7 @@ footer a:hover{color:var(--text);}
     <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
   </div>
   <div class="search-box">
-    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…" aria-label="Buscar localidad">
     <button id="geo-search-btn" type="button">Buscar</button>
   </div>
 </header>
@@ -280,13 +507,16 @@ footer a:hover{color:var(--text);}
 <section class="map-wrap" aria-label="Mapa en directo de incendios en España y Portugal">
   <div id="map"></div>
 
+  <!-- H1 superpuesto al mapa — SEO visible pero no intrusivo -->
+  <h1 class="hero-h1">Mapa de incendios activos en España y Portugal — Tiempo real</h1>
+
   <!-- Estado de error al cargar focos — visible solo si /api/focos falla -->
-  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
+  <div id="error-focos" role="alert" style="display:none;position:absolute;top:56px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
     <span>⚠ Error al cargar focos</span>
     <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button>
   </div>
 
-  <div class="floating-panel panel-filtros">
+  <div class="floating-panel panel-filtros" id="panel-filtros">
     <h3>Capas</h3>
     <div class="filtro-row">
       <span>VIIRS (375m)</span>
@@ -300,6 +530,11 @@ footer a:hover{color:var(--text);}
       <span>Focos FIRMS</span>
       <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
     </div>
+    <h3 style="margin-top:14px;">Vista</h3>
+    <div class="filtro-row">
+      <span>🛰 Satélite</span>
+      <label class="switch"><input type="checkbox" id="cap-satelite"><span class="slider"></span></label>
+    </div>
     <h3 style="margin-top:14px;">Rango</h3>
     <div class="filtro-row">
       <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
@@ -309,6 +544,12 @@ footer a:hover{color:var(--text);}
       </select>
     </div>
   </div>
+
+  <!-- FAB: Toggle capas (solo mobile) -->
+  <button class="fab fab-layers" id="fab-layers" aria-label="Mostrar capas" title="Capas">☰</button>
+
+  <!-- FAB: Mi ubicación -->
+  <button class="fab fab-location" id="fab-location" aria-label="Mi ubicación" title="Mi ubicación">📍</button>
 
   <div class="floating-panel panel-detalle" id="panel-detalle">
     <h3 id="pd-title">Foco seleccionado</h3>
@@ -323,7 +564,7 @@ footer a:hover{color:var(--text);}
     </div>
   </div>
 
-  <div class="floating-panel legend">
+  <div class="floating-panel legend" id="legend-panel">
     <div class="legend-item"><span class="legend-dot" style="background:var(--fire);"></span> Foco activo</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--alert);"></span> Nuevo (última hora)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--smoke);"></span> Dirección del humo</div>
@@ -332,8 +573,24 @@ footer a:hover{color:var(--text);}
   <div class="toast" id="toast"></div>
 </section>
 
-<!-- espacio reservado para anuncio — encaja de forma natural tras el "hero" del mapa -->
-<div class="content"><div class="ad-slot">[ ESPACIO ADSENSE · display responsive · 728×90 / 320×100 ]</div></div>
+<!-- Ad slot CLS-safe: post-mapa -->
+<div class="content"><div class="ad-slot" id="ad-top">[ ESPACIO ADSENSE · display responsive · 728×90 / 320×100 ]</div></div>
+
+<!-- ============================================================
+     NOTICIAS EN TIEMPO REAL (lazy loaded)
+     ============================================================ -->
+<section class="noticias-section" id="noticias-section" aria-label="Noticias sobre incendios forestales">
+  <div class="noticias-header">
+    <h2><span class="fire-icon">📰</span> Noticias sobre incendios</h2>
+    <span class="noticias-badge"><span class="live-dot"></span> EN DIRECTO</span>
+  </div>
+  <div id="noticias-contenedor">
+    <div class="noticias-loading">
+      <div class="spinner"></div>
+      <p>Cargando noticias…</p>
+    </div>
+  </div>
+</section>
 
 <!-- ============================================================
      CONTENIDO SEO (indexable, texto real, enlazado interno)
@@ -344,7 +601,7 @@ footer a:hover{color:var(--text);}
   <p>A diferencia de un aviso oficial de un servicio de emergencias, esta herramienta ofrece una vista agregada y de acceso abierto pensada para seguimiento informativo. Para una emergencia en curso, contacta siempre con el 112.</p>
 
   <h2 style="margin-top:40px;">Incendios por comunidad autónoma</h2>
-  <p>Consulta el detalle de focos activos en cada comunidad. Esta estructura de enlazado interno por región es la base de una arquitectura de geo-SEO: cada página localizada puede posicionar para búsquedas como “incendios en Galicia hoy” o “fuego cerca de Ourense”.</p>
+  <p>Consulta el detalle de focos activos en cada comunidad. Cada página localizada posiciona para búsquedas como "incendios en Galicia hoy" o "fuego cerca de Ourense".</p>
   <div class="grid-cca">
     <a href="/incendios/galicia">Galicia <span class="n">→</span></a>
     <a href="/incendios/asturias">Asturias <span class="n">→</span></a>
@@ -353,11 +610,17 @@ footer a:hover{color:var(--text);}
     <a href="/incendios/extremadura">Extremadura <span class="n">→</span></a>
     <a href="/incendios/cataluna">Cataluña <span class="n">→</span></a>
     <a href="/incendios/comunidad-valenciana">C. Valenciana <span class="n">→</span></a>
-    <a href="/incendios/portugal-centro">Portugal · Centro <span class="n">→</span></a>
+    <a href="/incendios/aragon">Aragón <span class="n">→</span></a>
+    <a href="/incendios/madrid">Madrid <span class="n">→</span></a>
+    <a href="/incendios/canarias">Canarias <span class="n">→</span></a>
+    <a href="/incendios/castilla-la-mancha">Castilla-La Mancha <span class="n">→</span></a>
+    <a href="/incendios/murcia">Murcia <span class="n">→</span></a>
     <a href="/incendios/portugal-norte">Portugal · Norte <span class="n">→</span></a>
+    <a href="/incendios/portugal-centro">Portugal · Centro <span class="n">→</span></a>
+    <a href="/incendios/portugal-sur">Portugal · Sur <span class="n">→</span></a>
   </div>
 
-  <div class="ad-slot">[ ESPACIO ADSENSE · in-article · se inserta entre bloques de contenido, nunca antes del contenido útil ]</div>
+  <div class="ad-slot" id="ad-mid">[ ESPACIO ADSENSE · in-article · se inserta entre bloques de contenido ]</div>
 
   <h2>Preguntas frecuentes</h2>
   <div class="faq">
@@ -377,6 +640,10 @@ footer a:hover{color:var(--text);}
       <summary>¿Puede este mapa sustituir a un aviso oficial?</summary>
       <p>No. Es una herramienta informativa de acceso abierto. Ante una emergencia real, contacta siempre con el 112 o con la fuente oficial de tu comunidad autónoma.</p>
     </details>
+    <details>
+      <summary>¿Qué significa cada color en el mapa?</summary>
+      <p>Los puntos rojos son focos activos confirmados por el sensor satelital. Los puntos amarillos son focos detectados en la última hora (nuevos). El cono azulado indica la dirección estimada del humo según el viento real medido en ese punto.</p>
+    </details>
   </div>
 </section>
 
@@ -395,10 +662,11 @@ footer a:hover{color:var(--text);}
 </footer>
 </main>
 
+<!-- Sticky ad banner (mobile only, CLS-safe) -->
+<div class="ad-slot-sticky" id="ad-sticky">[ ADSENSE · sticky footer · 320×50 ]</div>
+
 <!-- ============================================================
-     BANNER DE CONSENTIMIENTO DE COOKIES (RGPD)
-     Visible solo si el usuario no ha respondido o el consentimiento
-     tiene más de 6 meses. Gestión en JS (gestionarConsentimiento).
+     BANNER DE CONSENTIMIENTO DE COOKIES (RGPD + Consent Mode v2)
      ============================================================ -->
 <div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
   <p style="margin:0;max-width:70ch;">
@@ -431,18 +699,37 @@ footer a:hover{color:var(--text);}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script>
 /* ============================================================
-   MAPA BASE — CARTO Dark Matter
+   MAPA BASE — CARTO Dark Matter + Satélite Esri
    ============================================================ */
 const map = L.map('map', { zoomControl: true, attributionControl: true })
   .setView([40.2, -4.5], 6);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+/* Capa base: CARTO Dark Matter */
+const capaCarto = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
   subdomains: 'abcd',
-  maxZoom: 12
+  maxZoom: 18
 }).addTo(map);
+
+/* Capa satélite: Esri World Imagery */
+const capaSatelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+  maxZoom: 18
+});
+
+/* Toggle vista satélite */
+document.getElementById('cap-satelite')?.addEventListener('change', e => {
+  if (e.target.checked) {
+    map.removeLayer(capaCarto);
+    map.addLayer(capaSatelite);
+  } else {
+    map.removeLayer(capaSatelite);
+    map.addLayer(capaCarto);
+  }
+});
 
 /* ============================================================
    CAPA REAL DE INCENDIOS — NASA GIBS (VIIRS / MODIS)
@@ -469,12 +756,28 @@ if (capModisEl) {
 }
 
 /* ============================================================
-   PUNTOS INTERACTIVOS — DATOS REALES (NASA FIRMS via /api/focos)
-   La key de FIRMS vive en el backend (Vercel Function), NUNCA
-   en este HTML. Si /api/focos falla, se muestra un error claro;
-   nunca se usan datos falsos silenciosos.
+   PUNTOS INTERACTIVOS — DATOS REALES CON CLUSTERING
+   (NASA FIRMS via /api/focos)
    ============================================================ */
-const capaFocos = L.layerGroup().addTo(map);
+const clusterGroup = L.markerClusterGroup({
+  maxClusterRadius: 40,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+  iconCreateFunction: function(cluster) {
+    const count = cluster.getChildCount();
+    let size = 'small';
+    if (count >= 10) size = 'medium';
+    if (count >= 50) size = 'large';
+    return L.divIcon({
+      html: '<div>' + count + '</div>',
+      className: 'marker-cluster marker-cluster-' + size,
+      iconSize: L.point(40, 40)
+    });
+  }
+});
+map.addLayer(clusterGroup);
+
 const marcadores = {};
 let focosActuales = [];
 let diasActual = 1;
@@ -502,14 +805,17 @@ function crearIcono(esNuevo) {
 }
 
 function pintarFocos(focos, nuevosIds = []) {
-  capaFocos.clearLayers();
+  clusterGroup.clearLayers();
   const nuevosSet = new Set(nuevosIds);
+  const markers = [];
   focos.forEach(f => {
     const esNuevo = nuevosSet.has(f.id);
-    const marker = L.marker([f.lat, f.lon], { icon: crearIcono(esNuevo) }).addTo(capaFocos);
+    const marker = L.marker([f.lat, f.lon], { icon: crearIcono(esNuevo) });
     marker.on('click', () => mostrarDetalle(f, esNuevo));
     marcadores[f.id] = marker;
+    markers.push(marker);
   });
+  clusterGroup.addLayers(markers);
 }
 
 function actualizarTicker(total, ts) {
@@ -553,7 +859,7 @@ async function cargarFocosReales(dias) {
 }
 
 document.getElementById('cap-demo').addEventListener('change', e =>
-  e.target.checked ? map.addLayer(capaFocos) : map.removeLayer(capaFocos));
+  e.target.checked ? map.addLayer(clusterGroup) : map.removeLayer(clusterGroup));
 
 document.getElementById('rango').addEventListener('change', e => {
   const h = parseInt(e.target.value, 10);
@@ -567,12 +873,11 @@ document.getElementById('rango').addEventListener('change', e => {
 async function mostrarDetalle(f, esNuevo) {
   const panel = document.getElementById('panel-detalle');
   panel.classList.add('show');
-  // Título: nombre del satélite (más útil que el ID interno)
   document.getElementById('pd-title').innerHTML =
     (f.sat || 'Foco activo') + (esNuevo ? '<span class="badge-nuevo">NUEVO</span>' : '');
   document.getElementById('pd-sat').textContent  = f.sat  || '—';
   document.getElementById('pd-conf').textContent = f.conf || '—';
-  document.getElementById('pd-time').textContent = tiempoRelativo(f.ts); // ISO timestamp
+  document.getElementById('pd-time').textContent = tiempoRelativo(f.ts);
   document.getElementById('pd-coords').textContent = `${f.lat.toFixed(4)}, ${f.lon.toFixed(4)}`;
   document.getElementById('wind-info').textContent = 'cargando viento…';
   document.getElementById('compass-svg').innerHTML = '';
@@ -595,7 +900,6 @@ async function mostrarDetalle(f, esNuevo) {
 }
 
 function dibujarBrujula(dirDesde, vel){
-  // dirDesde = de dónde viene el viento; el humo se desplaza hacia dirDesde+180
   const dirHacia = (dirDesde + 180) % 360;
   const svg = `
   <svg width="90" height="90" viewBox="0 0 90 90">
@@ -616,9 +920,8 @@ let capaCono = null;
 function dibujarConoHumo(f, dirDesde, vel){
   if (capaCono) map.removeLayer(capaCono);
   const dirHacia = (dirDesde + 180) % 360;
-  const rad = dirHacia * Math.PI / 180;
-  const distKm = Math.min(2 + vel * 0.9, 60); // más viento → cono más largo (tope orientativo)
-  const anchoGrados = 22; // apertura del cono
+  const distKm = Math.min(2 + vel * 0.9, 60);
+  const anchoGrados = 22;
 
   const destino = (bearingDeg, distanciaKm) => {
     const R = 6371;
@@ -648,29 +951,112 @@ function mostrarToast(msg) {
 }
 
 /* ============================================================
-   CONSENTIMIENTO DE COOKIES (RGPD)
-   AdSense solo se carga si el usuario acepta explícitamente.
-   El consentimiento se guarda en localStorage 6 meses.
+   FABs — Mi ubicación + Toggle capas (mobile)
+   ============================================================ */
+document.getElementById('fab-location')?.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    mostrarToast('Tu navegador no soporta geolocalización');
+    return;
+  }
+  const btn = document.getElementById('fab-location');
+  btn.textContent = '⏳';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      map.flyTo([pos.coords.latitude, pos.coords.longitude], 10, { duration: 0.8 });
+      L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
+        radius: 8, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2
+      }).addTo(map).bindPopup('Tu ubicación').openPopup();
+      btn.textContent = '📍';
+    },
+    err => {
+      mostrarToast('No se pudo obtener tu ubicación');
+      btn.textContent = '📍';
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+});
+
+/* FAB: Toggle panel de capas (mobile) */
+let filtrosVisible = true;
+document.getElementById('fab-layers')?.addEventListener('click', () => {
+  const panel = document.getElementById('panel-filtros');
+  filtrosVisible = !filtrosVisible;
+  panel.classList.toggle('collapsed', !filtrosVisible);
+});
+
+/* ============================================================
+   CONSENTIMIENTO DE COOKIES (RGPD + Google Consent Mode v2)
    ============================================================ */
 function gestionarConsentimiento() {
   const consent   = localStorage.getItem('consent_ads');
   const ts        = localStorage.getItem('consent_ts');
   const seisMeses = 6 * 30 * 24 * 60 * 60 * 1000;
   if (consent !== null && ts && (Date.now() - parseInt(ts, 10) < seisMeses)) {
-    if (consent === '1') activarAdsense();
+    if (consent === '1') aceptarConsentimiento();
     return;
   }
   document.getElementById('cookie-banner').style.display = 'flex';
 }
 
+function aceptarConsentimiento() {
+  // Actualizar Google Consent Mode v2
+  gtag('consent', 'update', {
+    'ad_storage': 'granted',
+    'ad_user_data': 'granted',
+    'ad_personalization': 'granted',
+    'analytics_storage': 'granted'
+  });
+  activarAdsense();
+}
+
+function rechazarConsentimiento() {
+  gtag('consent', 'update', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied'
+  });
+}
+
 function activarAdsense() {
-  /* Descomenta y sustituye ca-pub-XXXX cuando tengas AdSense aprobado:
-  if (document.querySelector('script[src*="adsbygoogle"]')) return;
-  const s = document.createElement('script');
-  s.async = true;
-  s.src   = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX';
-  s.crossOrigin = 'anonymous';
-  document.head.appendChild(s); */
+  if (!document.querySelector('script[src*="adsbygoogle"]')) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src   = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6371000120185242';
+    s.crossOrigin = 'anonymous';
+    document.head.appendChild(s);
+  }
+  renderAdBlocks();
+}
+
+function renderAdBlocks() {
+  const topSlot = document.getElementById('ad-top');
+  if (topSlot && !topSlot.querySelector('ins')) {
+    topSlot.innerHTML = `<ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-6371000120185242"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>`;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }
+
+  const midSlot = document.getElementById('ad-mid');
+  if (midSlot && !midSlot.querySelector('ins')) {
+    midSlot.innerHTML = `<ins class="adsbygoogle"
+      style="display:block; text-align:center;"
+      data-ad-layout="in-article"
+      data-ad-format="fluid"
+      data-ad-client="ca-pub-6371000120185242"></ins>`;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }
+
+  const stickySlot = document.getElementById('ad-sticky');
+  if (stickySlot && !stickySlot.querySelector('ins')) {
+    stickySlot.innerHTML = `<ins class="adsbygoogle"
+      style="display:inline-block;width:320px;height:50px"
+      data-ad-client="ca-pub-6371000120185242"></ins>`;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }
 }
 
 document.getElementById('cookie-accept')?.addEventListener('click', () => {
@@ -678,13 +1064,14 @@ document.getElementById('cookie-accept')?.addEventListener('click', () => {
   localStorage.setItem('consent_ts', String(Date.now()));
   const b = document.getElementById('cookie-banner');
   if (b) b.style.display = 'none';
-  activarAdsense();
+  aceptarConsentimiento();
 });
 document.getElementById('cookie-reject')?.addEventListener('click', () => {
   localStorage.setItem('consent_ads', '0');
   localStorage.setItem('consent_ts', String(Date.now()));
   const b = document.getElementById('cookie-banner');
   if (b) b.style.display = 'none';
+  rechazarConsentimiento();
 });
 
 gestionarConsentimiento();
@@ -709,6 +1096,81 @@ async function buscar(){
     else mostrarToast('No se ha encontrado esa localidad');
   }catch(e){ mostrarToast('Buscador no disponible ahora mismo'); }
 }
+
+/* ============================================================
+   NOTICIAS EN TIEMPO REAL — lazy loaded con IntersectionObserver
+   ============================================================ */
+let noticiasYaCargadas = false;
+
+function tiempoRelativoNoticia(fechaStr) {
+  try {
+    const diff = Date.now() - new Date(fechaStr).getTime();
+    const min = Math.round(diff / 60000);
+    if (isNaN(min) || min < 0) return '';
+    if (min < 1)  return 'ahora mismo';
+    if (min < 60) return `hace ${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24)   return `hace ${h} h`;
+    const d = Math.floor(h / 24);
+    return `hace ${d} día${d > 1 ? 's' : ''}`;
+  } catch { return ''; }
+}
+
+function renderNoticias(noticias) {
+  const cont = document.getElementById('noticias-contenedor');
+  if (!noticias || noticias.length === 0) {
+    cont.innerHTML = `<div class="noticias-error">
+      <p>No se encontraron noticias recientes sobre incendios.</p>
+      <button onclick="cargarNoticias()">Reintentar</button>
+    </div>`;
+    return;
+  }
+  cont.innerHTML = `<div class="noticias-grid">${noticias.map(n => {
+    const tiempo = tiempoRelativoNoticia(n.fecha);
+    return `<a class="noticia-card" href="${n.enlace}" target="_blank" rel="noopener noreferrer">
+      <span class="noticia-titulo">${n.titulo}</span>
+      <div class="noticia-meta">
+        ${n.fuente ? `<span class="noticia-fuente">${n.fuente}</span>` : ''}
+        ${tiempo ? `<span class="noticia-fecha">${tiempo}</span>` : ''}
+      </div>
+      <span class="noticia-arrow">→</span>
+    </a>`;
+  }).join('')}</div>`;
+}
+
+async function cargarNoticias() {
+  const cont = document.getElementById('noticias-contenedor');
+  cont.innerHTML = `<div class="noticias-loading"><div class="spinner"></div><p>Cargando noticias…</p></div>`;
+  try {
+    const res = await fetch('/api/noticias');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.message);
+    renderNoticias(data.noticias);
+    noticiasYaCargadas = true;
+  } catch (err) {
+    cont.innerHTML = `<div class="noticias-error">
+      <p>⚠ No se pudieron cargar las noticias: ${err.message}</p>
+      <button onclick="cargarNoticias()">Reintentar</button>
+    </div>`;
+  }
+}
+
+/* Lazy load: solo cargar noticias cuando la sección es visible */
+const noticiasObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !noticiasYaCargadas) {
+      cargarNoticias();
+      noticiasObserver.disconnect();
+    }
+  });
+}, { rootMargin: '200px' });
+
+const noticiasSection = document.getElementById('noticias-section');
+if (noticiasSection) noticiasObserver.observe(noticiasSection);
+
+// Refrescar noticias cada 30 minutos (solo si ya se cargaron)
+setInterval(() => { if (noticiasYaCargadas) cargarNoticias(); }, 30 * 60 * 1000);
 </script>
 
 </body>

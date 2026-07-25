@@ -7,11 +7,18 @@
 <meta name="description" content="Mapa en tiempo real de incendios forestales en Galicia. Focos activos detectados por satélite NASA VIIRS/MODIS, dirección del humo según viento real y alertas de nuevos incendios.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.incendiosenespana.es/incendios/galicia">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Incendios en Galicia hoy — Mapa satelital en tiempo real">
 <meta property="og:description" content="Mapa de incendios forestales en Galicia con datos NASA FIRMS (VIIRS/MODIS). Focos activos, humo y alertas.">
 <meta property="og:url" content="https://www.incendiosenespana.es/incendios/galicia">
 <meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Incendios en Galicia hoy — Mapa en tiempo real">
+<meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -28,10 +35,23 @@
   }
 }
 </script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied', 'ad_user_data': 'denied',
+  'ad_personalization': 'denied', 'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <link rel="stylesheet" href="/assets/shared.css">
 </head>
 <body>
@@ -44,7 +64,7 @@
     <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
   </div>
   <div class="search-box">
-    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…" aria-label="Buscar localidad">
     <button id="geo-search-btn" type="button">Buscar</button>
   </div>
 </header>
@@ -58,7 +78,7 @@
     <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button>
   </div>
 
-  <div class="floating-panel panel-filtros">
+  <div class="floating-panel panel-filtros" id="panel-filtros">
     <h3>Capas</h3>
     <div class="filtro-row">
       <span>VIIRS (375m)</span>
@@ -72,6 +92,11 @@
       <span>Focos FIRMS</span>
       <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
     </div>
+    <h3 style="margin-top:14px;">Vista</h3>
+    <div class="filtro-row">
+      <span>🛰 Satélite</span>
+      <label class="switch"><input type="checkbox" id="cap-satelite"><span class="slider"></span></label>
+    </div>
     <h3 style="margin-top:14px;">Rango</h3>
     <div class="filtro-row">
       <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
@@ -81,6 +106,10 @@
       </select>
     </div>
   </div>
+
+  <!-- FABs -->
+  <button class="fab fab-layers" id="fab-layers" aria-label="Mostrar capas" title="Capas">☰</button>
+  <button class="fab fab-location" id="fab-location" aria-label="Mi ubicación" title="Mi ubicación">📍</button>
 
   <div class="floating-panel panel-detalle" id="panel-detalle">
     <h3 id="pd-title">Foco seleccionado</h3>
@@ -168,6 +197,7 @@ window.REGION_CONFIG = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="/assets/region-map.js"></script>
 </body>
 </html>

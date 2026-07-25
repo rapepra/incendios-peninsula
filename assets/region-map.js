@@ -14,6 +14,7 @@
 
    Dependencias (deben cargarse antes):
      - Leaflet 1.9.x (CDN)
+     - Leaflet.markercluster 1.5.x (CDN)
 ============================================================ */
 
 'use strict';
@@ -30,11 +31,28 @@ const CFG = window.REGION_CONFIG || {
 const map = L.map('map', { zoomControl: true, attributionControl: true })
   .setView(CFG.center, CFG.zoom);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+const capaCarto = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap &copy; CARTO',
   subdomains: 'abcd',
-  maxZoom: 12
+  maxZoom: 18
 }).addTo(map);
+
+/* Capa satélite: Esri World Imagery */
+const capaSatelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+  maxZoom: 18
+});
+
+/* Toggle vista satélite */
+document.getElementById('cap-satelite')?.addEventListener('change', e => {
+  if (e.target.checked) {
+    map.removeLayer(capaCarto);
+    map.addLayer(capaSatelite);
+  } else {
+    map.removeLayer(capaSatelite);
+    map.addLayer(capaCarto);
+  }
+});
 
 /* ─── CAPAS NASA GIBS ─────────────────────────────────────── */
 const fechaAyer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
@@ -54,8 +72,26 @@ document.getElementById('cap-viirs')?.addEventListener('change', e =>
 document.getElementById('cap-modis')?.addEventListener('change', e =>
   e.target.checked ? map.addLayer(capaModis) : map.removeLayer(capaModis));
 
-/* ─── PUNTOS INTERACTIVOS — DATOS REALES ────────────────────── */
-const capaFocos = L.layerGroup().addTo(map);
+/* ─── PUNTOS INTERACTIVOS — DATOS REALES CON CLUSTERING ───── */
+const clusterGroup = L.markerClusterGroup({
+  maxClusterRadius: 40,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+  iconCreateFunction: function(cluster) {
+    const count = cluster.getChildCount();
+    let size = 'small';
+    if (count >= 10) size = 'medium';
+    if (count >= 50) size = 'large';
+    return L.divIcon({
+      html: '<div>' + count + '</div>',
+      className: 'marker-cluster marker-cluster-' + size,
+      iconSize: L.point(40, 40)
+    });
+  }
+});
+map.addLayer(clusterGroup);
+
 const marcadores = {};
 let focosActuales = [];
 let diasActual = 1;
@@ -77,22 +113,24 @@ function crearIcono(esNuevo) {
     className: '',
     html: `<div style="width:14px;height:14px;border-radius:50%;
       background:${esNuevo ? 'var(--alert)' : 'var(--fire)'};
-      box-shadow:0 0 0 5px ${esNuevo ? 'rgba(255,210,60,.25)' : 'rgba(255,90,54,.25)'};">
-    </div>`,
+      box-shadow:0 0 0 5px ${esNuevo ? 'rgba(255,210,60,.25)' : 'rgba(255,90,54,.25)'};
+    "></div>`,
     iconSize: [14, 14]
   });
 }
 
 function pintarFocos(focos, nuevosIds = []) {
-  capaFocos.clearLayers();
+  clusterGroup.clearLayers();
   const nuevosSet = new Set(nuevosIds);
+  const markers = [];
   focos.forEach(f => {
     const esNuevo = nuevosSet.has(f.id);
-    const marker = L.marker([f.lat, f.lon], { icon: crearIcono(esNuevo) })
-      .addTo(capaFocos);
+    const marker = L.marker([f.lat, f.lon], { icon: crearIcono(esNuevo) });
     marker.on('click', () => mostrarDetalle(f, esNuevo));
     marcadores[f.id] = marker;
+    markers.push(marker);
   });
+  clusterGroup.addLayers(markers);
 }
 
 function actualizarTicker(total, ts) {
@@ -146,10 +184,10 @@ async function cargarFocosReales(dias) {
   }
 }
 
-document.getElementById('cap-demo').addEventListener('change', e =>
-  e.target.checked ? map.addLayer(capaFocos) : map.removeLayer(capaFocos));
+document.getElementById('cap-demo')?.addEventListener('change', e =>
+  e.target.checked ? map.addLayer(clusterGroup) : map.removeLayer(clusterGroup));
 
-document.getElementById('rango').addEventListener('change', e => {
+document.getElementById('rango')?.addEventListener('change', e => {
   const h = parseInt(e.target.value, 10);
   const dias = h <= 24 ? 1 : h <= 48 ? 2 : 7;
   cargarFocosReales(dias);
@@ -249,6 +287,38 @@ function mostrarToast(msg) {
   setTimeout(() => t.classList.remove('show'), 6000);
 }
 
+/* ─── FABs: Mi ubicación + Toggle capas (mobile) ─────────── */
+document.getElementById('fab-location')?.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    mostrarToast('Tu navegador no soporta geolocalización');
+    return;
+  }
+  const btn = document.getElementById('fab-location');
+  btn.textContent = '⏳';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      map.flyTo([pos.coords.latitude, pos.coords.longitude], 10, { duration: 0.8 });
+      L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
+        radius: 8, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2
+      }).addTo(map).bindPopup('Tu ubicación').openPopup();
+      btn.textContent = '📍';
+    },
+    () => {
+      mostrarToast('No se pudo obtener tu ubicación');
+      btn.textContent = '📍';
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+});
+
+let filtrosVisible = true;
+document.getElementById('fab-layers')?.addEventListener('click', () => {
+  const panel = document.getElementById('panel-filtros');
+  if (!panel) return;
+  filtrosVisible = !filtrosVisible;
+  panel.classList.toggle('collapsed', !filtrosVisible);
+});
+
 /* ─── BUSCADOR DE LOCALIDAD ───────────────────────────────── */
 document.getElementById('geo-search-btn')?.addEventListener('click', buscar);
 document.getElementById('geo-search')?.addEventListener('keydown', e => {
@@ -270,41 +340,82 @@ async function buscar() {
   }
 }
 
-/* ─── COOKIE CONSENT ─────────────────────────────────────── */
+/* ─── COOKIE CONSENT + Google Consent Mode v2 ────────────── */
 function gestionarConsentimiento() {
   const consent    = localStorage.getItem('consent_ads');
   const ts         = localStorage.getItem('consent_ts');
   const seisMeses  = 6 * 30 * 24 * 60 * 60 * 1000;
 
   if (consent !== null && ts && (Date.now() - parseInt(ts, 10) < seisMeses)) {
-    if (consent === '1') activarAdsense();
+    if (consent === '1') aceptarConsentimiento();
     return;
   }
   const banner = document.getElementById('cookie-banner');
   if (banner) banner.style.display = 'flex';
 }
 
+function aceptarConsentimiento() {
+  if (typeof gtag === 'function') {
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'ad_user_data': 'granted',
+      'ad_personalization': 'granted',
+      'analytics_storage': 'granted'
+    });
+  }
+  activarAdsense();
+}
+
+function rechazarConsentimiento() {
+  if (typeof gtag === 'function') {
+    gtag('consent', 'update', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied'
+    });
+  }
+}
+
 function activarAdsense() {
-  /* Descomenta y sustituye ca-pub-XXXX cuando tengas AdSense aprobado:
-  if (document.querySelector('script[src*="adsbygoogle"]')) return;
-  const s = document.createElement('script');
-  s.async = true;
-  s.src   = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX';
-  s.crossOrigin = 'anonymous';
-  document.head.appendChild(s); */
+  if (!document.querySelector('script[src*="adsbygoogle"]')) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src   = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6371000120185242';
+    s.crossOrigin = 'anonymous';
+    document.head.appendChild(s);
+  }
+  renderRegionAdBlocks();
+}
+
+function renderRegionAdBlocks() {
+  const slots = document.querySelectorAll('.ad-slot');
+  slots.forEach(slot => {
+    if (!slot.querySelector('ins')) {
+      slot.innerHTML = `<ins class="adsbygoogle"
+        style="display:block; text-align:center;"
+        data-ad-layout="in-article"
+        data-ad-format="fluid"
+        data-ad-client="ca-pub-6371000120185242"></ins>`;
+      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+    }
+  });
 }
 
 document.getElementById('cookie-accept')?.addEventListener('click', () => {
   localStorage.setItem('consent_ads', '1');
   localStorage.setItem('consent_ts', String(Date.now()));
-  document.getElementById('cookie-banner').style.display = 'none';
-  activarAdsense();
+  const b = document.getElementById('cookie-banner');
+  if (b) b.style.display = 'none';
+  aceptarConsentimiento();
 });
 
 document.getElementById('cookie-reject')?.addEventListener('click', () => {
   localStorage.setItem('consent_ads', '0');
   localStorage.setItem('consent_ts', String(Date.now()));
-  document.getElementById('cookie-banner').style.display = 'none';
+  const b = document.getElementById('cookie-banner');
+  if (b) b.style.display = 'none';
+  rechazarConsentimiento();
 });
 
 gestionarConsentimiento();

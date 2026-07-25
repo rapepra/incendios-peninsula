@@ -4,20 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Incendios en Asturias hoy — Mapa en tiempo real | IncendiosES</title>
-<meta name="description" content="Mapa en tiempo real de incendios forestales en Asturias. Focos activos detectados por satélite NASA VIIRS/MODIS, dirección del humo y alertas de nuevos incendios en el Principado.">
+<meta name="description" content="Mapa en tiempo real de incendios forestales en Asturias. Focos activos detectados por satélite NASA VIIRS/MODIS, dirección del humo y alertas.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.incendiosenespana.es/incendios/asturias">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Incendios en Asturias hoy — Mapa satelital en tiempo real">
-<meta property="og:description" content="Focos activos en Asturias detectados por satélite NASA FIRMS. Humo, viento y alertas en tiempo real.">
+<meta property="og:description" content="Mapa de incendios forestales en Asturias con datos NASA FIRMS (VIIRS/MODIS). Focos activos, humo y alertas.">
 <meta property="og:url" content="https://www.incendiosenespana.es/incendios/asturias">
 <meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Incendios en Asturias hoy — Mapa en tiempo real">
+<meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Incendios en Asturias hoy",
   "url": "https://www.incendiosenespana.es/incendios/asturias",
+  "description": "Mapa de incendios forestales en Asturias con datos satelitales de la NASA.",
   "breadcrumb": {
     "@type": "BreadcrumbList",
     "itemListElement": [
@@ -27,10 +35,23 @@
   }
 }
 </script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied', 'ad_user_data': 'denied',
+  'ad_personalization': 'denied', 'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <link rel="stylesheet" href="/assets/shared.css">
 </head>
 <body>
@@ -43,7 +64,7 @@
     <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
   </div>
   <div class="search-box">
-    <input type="text" id="geo-search" placeholder="Buscar localidad, concejo…">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, concejo…" aria-label="Buscar localidad">
     <button id="geo-search-btn" type="button">Buscar</button>
   </div>
 </header>
@@ -51,15 +72,31 @@
 <main>
 <section class="map-wrap" aria-label="Mapa de incendios en Asturias">
   <div id="map"></div>
+
   <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
     <span>⚠ Error al cargar focos</span>
     <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button>
   </div>
-  <div class="floating-panel panel-filtros">
+
+  <div class="floating-panel panel-filtros" id="panel-filtros">
     <h3>Capas</h3>
-    <div class="filtro-row"><span>VIIRS (375m)</span><label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>MODIS (1km)</span><label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>Focos FIRMS</span><label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label></div>
+    <div class="filtro-row">
+      <span>VIIRS (375m)</span>
+      <label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>MODIS (1km)</span>
+      <label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>Focos FIRMS</span>
+      <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Vista</h3>
+    <div class="filtro-row">
+      <span>🛰 Satélite</span>
+      <label class="switch"><input type="checkbox" id="cap-satelite"><span class="slider"></span></label>
+    </div>
     <h3 style="margin-top:14px;">Rango</h3>
     <div class="filtro-row">
       <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
@@ -69,6 +106,11 @@
       </select>
     </div>
   </div>
+
+  <!-- FABs -->
+  <button class="fab fab-layers" id="fab-layers" aria-label="Mostrar capas" title="Capas">☰</button>
+  <button class="fab fab-location" id="fab-location" aria-label="Mi ubicación" title="Mi ubicación">📍</button>
+
   <div class="floating-panel panel-detalle" id="panel-detalle">
     <h3 id="pd-title">Foco seleccionado</h3>
     <div class="detalle-row"><span>Satélite</span><span id="pd-sat">—</span></div>
@@ -81,29 +123,31 @@
       <span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">cargando viento…</span>
     </div>
   </div>
+
   <div class="floating-panel legend">
     <div class="legend-item"><span class="legend-dot" style="background:var(--fire);"></span> Foco activo</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--alert);"></span> Nuevo (última hora)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--smoke);"></span> Dirección del humo</div>
   </div>
+
   <div class="toast" id="toast"></div>
 </section>
 
 <section class="content">
   <div class="breadcrumb">
-    <a href="/">IncendiosES</a><span class="sep">›</span><span>Asturias</span>
+    <a href="/">IncendiosES</a>
+    <span class="sep">›</span>
+    <span>Asturias</span>
   </div>
+
   <h1>Incendios en Asturias — mapa satelital en tiempo real</h1>
-  <p class="lead">El Principado de Asturias combina una alta pluviometría anual con períodos de sequía primaveral que, junto a los extensos brezales y pastizales de montaña, generan condiciones de riesgo recurrentes. El mapa muestra los focos activos detectados por satélite NASA sobre el territorio asturiano.</p>
-  <p>Los incendios en Asturias se concentran principalmente en primavera (marzo-mayo), asociados a quemas agrícolas y pastoreo que se descontrolan, y en menor medida en verano. Los concejos del interior, como Tineo, Cangas del Narcea o Allande, son los más afectados históricamente. La presencia del Parque Nacional de los Picos de Europa en el límite oriental añade una dimensión de especial sensibilidad ecológica.</p>
-  <p>El Servicio de Montes y el SEPRONA coordinan la extinción junto con los Bomberos de Asturias. En emergencias, llama siempre al <strong>112</strong>.</p>
+  <p class="lead">El Principado de Asturias sufre episodios severos de incendios forestales, especialmente durante el invierno-primavera (febrero-abril) y a finales de verano, intensificados por rachas de viento del sur (viento de puerto) de carácter muy seco.</p>
+
+  <p>La orografía escarpada de la Cordillera Cantábrica y los valles del occidente y oriente asturiano dificultan el acceso terrestre, convirtiendo a los sensores satelitales en una herramienta indispensable de detección temprana.</p>
+
+  <p>El Servicio de Emergencias del Principado de Asturias (SEPA) coordina las labores de extinción. En caso de emergencia, contacta inmediatamente con el <strong>112</strong>.</p>
+
   <div class="ad-slot">[ ESPACIO ADSENSE · in-article ]</div>
-  <div class="faq">
-    <details open>
-      <summary>¿Cuál es el riesgo de incendio en Asturias?</summary>
-      <p>Aunque Asturias es una de las regiones más lluviosas de España, los períodos secos de primavera y la abundancia de materia vegetal acumulada en monte abandonado crean condiciones de riesgo significativas, especialmente entre febrero y mayo.</p>
-    </details>
-  </div>
 </section>
 
 <footer>
@@ -112,13 +156,19 @@
     <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos: NASA FIRMS/GIBS. Viento: Open-Meteo. No es un servicio oficial de emergencias.</p>
   </div>
   <div class="footer-links">
-    <a href="/aviso-legal">Aviso legal</a><a href="/privacidad">Privacidad</a><a href="/cookies">Cookies</a><a href="/">← Mapa general</a>
+    <a href="/aviso-legal">Aviso legal</a>
+    <a href="/privacidad">Privacidad</a>
+    <a href="/cookies">Cookies</a>
+    <a href="/">← Mapa general</a>
   </div>
 </footer>
 </main>
 
 <div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
-  <p style="margin:0;max-width:70ch;">Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> propias y podemos usar cookies de <strong style="color:#eaedf3;">publicidad de Google AdSense</strong> con tu consentimiento. <a href="/cookies" style="color:var(--fire);">Más info</a></p>
+  <p style="margin:0;max-width:70ch;">
+    Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> propias y podemos usar cookies de <strong style="color:#eaedf3;">publicidad de Google AdSense</strong> con tu consentimiento.
+    <a href="/cookies" style="color:var(--fire);">Más info</a>
+  </p>
   <div style="display:flex;gap:10px;flex-shrink:0;">
     <button id="cookie-reject" class="cookie-btn-reject">Solo necesarias</button>
     <button id="cookie-accept" class="cookie-btn-accept">Aceptar todas</button>
@@ -126,9 +176,10 @@
 </div>
 
 <script>
-window.REGION_CONFIG = { name: 'Asturias', slug: 'asturias', center: [43.35, -5.8], zoom: 8, bbox: '-7.1,43.0,-4.5,43.8' };
+window.REGION_CONFIG = { name: 'Asturias', slug: 'asturias', center: [43.3, -5.9], zoom: 8, bbox: '-7.2,42.8,-4.5,43.6' };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="/assets/region-map.js"></script>
 </body>
 </html>

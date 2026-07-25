@@ -1,77 +1,183 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Incêndios em Portugal Centro hoje — Mapa em tempo real | IncendiosES</title>
-<meta name="description" content="Mapa em tempo real de incêndios florestais na região Centro de Portugal. Focos NASA VIIRS/MODIS em Leiria, Coimbra e Castelo Branco. Pedrógão Grande e toda a região.">
+<meta name="description" content="Mapa em tempo real de incêndios florestais na Região Centro de Portugal (Leiria, Coimbra, Castelo Branco, Guarda). Focos ativos NASA VIIRS/MODIS e direção do vento.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.incendiosenespana.es/incendios/portugal-centro">
-<meta property="og:title" content="Incêndios Portugal Centro — Mapa satelital em tempo real">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Incêndios em Portugal Centro — Mapa em tempo real">
+<meta property="og:description" content="Mapa de incêndios florestais no Centro de Portugal com dados NASA FIRMS (VIIRS/MODIS).">
 <meta property="og:url" content="https://www.incendiosenespana.es/incendios/portugal-centro">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Incêndios em Portugal Centro","url":"https://www.incendiosenespana.es/incendios/portugal-centro","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://www.incendiosenespana.es/"},{"@type":"ListItem","position":2,"name":"Portugal · Centro","item":"https://www.incendiosenespana.es/incendios/portugal-centro"}]}}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Incêndios em Portugal Centro — Mapa em tempo real">
+<meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Incêndios em Portugal Centro hoje",
+  "url": "https://www.incendiosenespana.es/incendios/portugal-centro",
+  "description": "Mapa de incêndios florestais no Centro de Portugal com dados de satélite da NASA.",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.incendiosenespana.es/" },
+      { "@type": "ListItem", "position": 2, "name": "Portugal Centro", "item": "https://www.incendiosenespana.es/incendios/portugal-centro" }
+    ]
+  }
+}
+</script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied', 'ad_user_data': 'denied',
+  'ad_personalization': 'denied', 'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <link rel="stylesheet" href="/assets/shared.css">
 </head>
 <body>
+
 <header class="topbar">
   <div class="brand"><span class="dot"></span> <a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div>
-  <div class="ticker mono"><span id="tk-count">— focos ativos</span><span id="tk-update">atualiz. há —</span><span>Fonte: NASA FIRMS · VIIRS/MODIS</span></div>
-  <div class="search-box"><input type="text" id="geo-search" placeholder="Buscar localidade, concelho…"><button id="geo-search-btn" type="button">Buscar</button></div>
-</header>
-<main>
-<section class="map-wrap" aria-label="Mapa de incêndios em Portugal Centro">
-  <div id="map"></div>
-  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;"><span>⚠ Erro ao carregar focos</span><button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">repetir</button></div>
-  <div class="floating-panel panel-filtros">
-    <h3>Camadas</h3>
-    <div class="filtro-row"><span>VIIRS (375m)</span><label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>MODIS (1km)</span><label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>Focos FIRMS</span><label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label></div>
-    <h3 style="margin-top:14px;">Período</h3>
-    <div class="filtro-row"><select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;"><option value="24">Últimas 24 h</option><option value="48">Últimas 48 h</option><option value="168">Últimos 7 dias</option></select></div>
+  <div class="ticker mono">
+    <span id="tk-count">— focos ativos</span>
+    <span id="tk-update">at. há —</span>
+    <span>Fonte: NASA FIRMS · VIIRS/MODIS</span>
   </div>
+  <div class="search-box">
+    <input type="text" id="geo-search" placeholder="Pesquisar localidade…" aria-label="Pesquisar localidade">
+    <button id="geo-search-btn" type="button">Buscar</button>
+  </div>
+</header>
+
+<main>
+<section class="map-wrap" aria-label="Mapa de incêndios no Centro de Portugal">
+  <div id="map"></div>
+
+  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
+    <span>⚠ Erro ao carregar focos</span>
+    <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">repetir</button>
+  </div>
+
+  <div class="floating-panel panel-filtros" id="panel-filtros">
+    <h3>Camadas</h3>
+    <div class="filtro-row">
+      <span>VIIRS (375m)</span>
+      <label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>MODIS (1km)</span>
+      <label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>Focos FIRMS</span>
+      <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Vista</h3>
+    <div class="filtro-row">
+      <span>🛰 Satélite</span>
+      <label class="switch"><input type="checkbox" id="cap-satelite"><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Intervalo</h3>
+    <div class="filtro-row">
+      <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
+        <option value="24">Últimas 24 h</option>
+        <option value="48">Últimas 48 h</option>
+        <option value="168">Últimos 7 dias</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- FABs -->
+  <button class="fab fab-layers" id="fab-layers" aria-label="Mostrar camadas" title="Camadas">☰</button>
+  <button class="fab fab-location" id="fab-location" aria-label="A minha localização" title="A minha localização">📍</button>
+
   <div class="floating-panel panel-detalle" id="panel-detalle">
     <h3 id="pd-title">Foco selecionado</h3>
     <div class="detalle-row"><span>Satélite</span><span id="pd-sat">—</span></div>
     <div class="detalle-row"><span>Confiança</span><span id="pd-conf">—</span></div>
     <div class="detalle-row"><span>Detetado</span><span id="pd-time">—</span></div>
     <div class="detalle-row"><span>Coordenadas</span><span id="pd-coords">—</span></div>
-    <div class="compass" id="compass-wrap"><span class="compass-label">Direção estimada do fumo</span><div id="compass-svg"></div><span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">a carregar vento…</span></div>
+    <div class="compass" id="compass-wrap">
+      <span class="compass-label">Direção estimada do fumo</span>
+      <div id="compass-svg"></div>
+      <span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">a carregar vento…</span>
+    </div>
   </div>
+
   <div class="floating-panel legend">
     <div class="legend-item"><span class="legend-dot" style="background:var(--fire);"></span> Foco ativo</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--alert);"></span> Novo (última hora)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--smoke);"></span> Direção do fumo</div>
   </div>
+
   <div class="toast" id="toast"></div>
 </section>
+
 <section class="content">
-  <div class="breadcrumb"><a href="/">IncendiosES</a><span class="sep">›</span><span>Portugal · Centro</span></div>
-  <h1>Incêndios em Portugal Centro — mapa satelital em tempo real</h1>
-  <p class="lead">A região Centro de Portugal foi epicentro do incêndio mais mortífero da história europeia moderna: o incêndio de Pedrógão Grande, em junho de 2017, que causou 66 vítimas mortais e destruiu mais de 45.000 hectares de pinhal e eucalipto no distrito de Leiria.</p>
-  <p>Os distritos de Leiria, Coimbra e Castelo Branco concentram vastas manchas de pinheiro bravo (<em>Pinus pinaster</em>) e eucalipto (<em>Eucalyptus globulus</em>), espécies de elevada inflamabilidade que favorecem incêndios de grande intensidade. O vento de leste seco (Nortada interior) e as condições de calor extremo no verão criam condições de risco muito elevado de junho a setembro.</p>
-  <p>A Autoridade Nacional de Emergência e Proteção Civil (ANEPC) coordena o combate. Em caso de emergência, ligue sempre para o <strong>112</strong>.</p>
-  <div class="ad-slot">[ ESPAÇO ADSENSE · in-article ]</div>
-  <div class="faq">
-    <details open>
-      <summary>O que aconteceu em Pedrógão Grande em 2017?</summary>
-      <p>O incêndio de junho de 2017 em Pedrógão Grande foi o mais mortífero da história europeia recente: 66 pessoas morreram, muitas delas nos seus veículos tentando fugir. O fogo propagou-se a uma velocidade inédita por uma vasta área de pinhal e eucaliptal, alimentado por vento forte e calor extremo.</p>
-    </details>
+  <div class="breadcrumb">
+    <a href="/">IncendiosES</a>
+    <span class="sep">›</span>
+    <span>Portugal Centro</span>
   </div>
+
+  <h1>Incêndios no Centro de Portugal — mapa de satélite em tempo real</h1>
+  <p class="lead">A Região Centro de Portugal (Leiria, Coimbra, Castelo Branco, Guarda, Viseu) é historicamente afetada por grandes incêndios florestais no verão devido à densidade de eucaliptais e pinhais bravos.</p>
+
+  <p>A ANEPC (Autoridade Nacional de Emergência e Proteção Civil) coordena as operações de combate. Em caso de emergência, ligue <strong>112</strong>.</p>
+
+  <div class="ad-slot">[ ESPACIO ADSENSE · in-article ]</div>
 </section>
+
 <footer>
-  <div><div class="brand" style="margin-bottom:8px;"><a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div><p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Dados: NASA FIRMS/GIBS. Vento: Open-Meteo. Não é um serviço oficial de emergências.</p></div>
-  <div class="footer-links"><a href="/aviso-legal">Aviso legal</a><a href="/privacidad">Privacidade</a><a href="/cookies">Cookies</a><a href="/">← Mapa geral</a></div>
+  <div>
+    <div class="brand" style="margin-bottom:8px;"><a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div>
+    <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Dados: NASA FIRMS/GIBS. Vento: Open-Meteo. Não é um serviço oficial de emergências.</p>
+  </div>
+  <div class="footer-links">
+    <a href="/aviso-legal">Aviso legal</a>
+    <a href="/privacidad">Privacidade</a>
+    <a href="/cookies">Cookies</a>
+    <a href="/">← Mapa geral</a>
+  </div>
 </footer>
 </main>
+
 <div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
-  <p style="margin:0;max-width:70ch;">Usamos <strong style="color:#eaedf3;">cookies técnicos</strong> próprios e podemos usar cookies de <strong style="color:#eaedf3;">publicidade Google AdSense</strong> com o seu consentimento. <a href="/cookies" style="color:var(--fire);">Mais info</a></p>
-  <div style="display:flex;gap:10px;flex-shrink:0;"><button id="cookie-reject" class="cookie-btn-reject">Só necessários</button><button id="cookie-accept" class="cookie-btn-accept">Aceitar todos</button></div>
+  <p style="margin:0;max-width:70ch;">
+    Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> e cookies de <strong style="color:#eaedf3;">publicidade Google AdSense</strong> com o seu consentimento.
+    <a href="/cookies" style="color:var(--fire);">Mais info</a>
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="cookie-reject" class="cookie-btn-reject">Apenas necessárias</button>
+    <button id="cookie-accept" class="cookie-btn-accept">Aceitar todas</button>
+  </div>
 </div>
-<script>window.REGION_CONFIG = { name: 'Portugal Centro', slug: 'portugal-centro', center: [39.3, -8.1], zoom: 8, bbox: '-9.3,38.4,-7.0,40.2' };</script>
+
+<script>
+window.REGION_CONFIG = { name: 'Portugal Centro', slug: 'portugal-centro', center: [40.2, -7.8], zoom: 8, bbox: '-9.0,39.5,-6.8,41.0' };
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="/assets/region-map.js"></script>
 </body>
 </html>

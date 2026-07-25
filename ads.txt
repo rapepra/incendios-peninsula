@@ -1,9 +1,1 @@
-# ads.txt — Authorized Digital Sellers (IAB)
-# ─────────────────────────────────────────────────────────────
-# INSTRUCCIONES:
-# 1. Solicita tu cuenta en https://www.google.com/adsense/
-# 2. Una vez aprobada, obtén tu Publisher ID (ca-pub-XXXXXXXXXXXXXXXX)
-# 3. Sustituye XXXXXXXXXXXXXXXX por tu ID real en la línea de abajo
-# 4. Sube este archivo a la raíz del dominio: https://www.incendiosenespana.es/ads.txt
-# ─────────────────────────────────────────────────────────────
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+google.com, pub-6371000120185242, DIRECT, f08c47fec0942fa0

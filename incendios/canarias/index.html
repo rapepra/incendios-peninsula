@@ -3,34 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Incendios en Castilla y León hoy — Mapa en tiempo real | IncendiosES</title>
-<meta name="description" content="Mapa en tiempo real de incendios forestales en Castilla y León (Zamora, Ávila, León, Salamanca). Focos activos detectados por satélite NASA VIIRS/MODIS y dirección del humo.">
+<title>Incendios en Canarias hoy — Mapa en tiempo real | IncendiosES</title>
+<meta name="description" content="Mapa en tiempo real de incendios forestales en las Islas Canarias (Tenerife, Gran Canaria, La Palma). Focos activos detectados por satélite NASA VIIRS/MODIS y dirección del humo.">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<link rel="canonical" href="https://www.incendiosenespana.es/incendios/castilla-y-leon">
+<link rel="canonical" href="https://www.incendiosenespana.es/incendios/canarias">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Incendios en Castilla y León hoy — Mapa satelital en tiempo real">
-<meta property="og:description" content="Mapa de incendios forestales en Castilla y León con datos NASA FIRMS (VIIRS/MODIS). Focos activos, humo y alertas.">
-<meta property="og:url" content="https://www.incendiosenespana.es/incendios/castilla-y-leon">
+<meta property="og:title" content="Incendios en Canarias hoy — Mapa satelital en tiempo real">
+<meta property="og:description" content="Mapa de incendios forestales en las Islas Canarias con datos NASA FIRMS (VIIRS/MODIS). Focos activos en Tenerife, Gran Canaria y La Palma.">
+<meta property="og:url" content="https://www.incendiosenespana.es/incendios/canarias">
 <meta property="og:locale" content="es_ES">
 <meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Incendios en Castilla y León hoy — Mapa en tiempo real">
+<meta name="twitter:title" content="Incendios en Canarias hoy — Mapa en tiempo real">
 <meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Incendios en Castilla y León hoy",
-  "url": "https://www.incendiosenespana.es/incendios/castilla-y-leon",
-  "description": "Mapa de incendios forestales en Castilla y León con datos satelitales de la NASA.",
+  "name": "Incendios en Canarias hoy",
+  "url": "https://www.incendiosenespana.es/incendios/canarias",
+  "description": "Mapa de incendios forestales en las Islas Canarias con datos satelitales de la NASA.",
   "breadcrumb": {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.incendiosenespana.es/" },
-      { "@type": "ListItem", "position": 2, "name": "Castilla y León", "item": "https://www.incendiosenespana.es/incendios/castilla-y-leon" }
+      { "@type": "ListItem", "position": 2, "name": "Canarias", "item": "https://www.incendiosenespana.es/incendios/canarias" }
     ]
   }
 }
@@ -64,13 +64,13 @@ gtag('consent', 'default', {
     <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
   </div>
   <div class="search-box">
-    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…" aria-label="Buscar localidad">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, isla…" aria-label="Buscar localidad">
     <button id="geo-search-btn" type="button">Buscar</button>
   </div>
 </header>
 
 <main>
-<section class="map-wrap" aria-label="Mapa de incendios en Castilla y León">
+<section class="map-wrap" aria-label="Mapa de incendios en Canarias">
   <div id="map"></div>
 
   <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
@@ -137,23 +137,35 @@ gtag('consent', 'default', {
   <div class="breadcrumb">
     <a href="/">IncendiosES</a>
     <span class="sep">›</span>
-    <span>Castilla y León</span>
+    <span>Canarias</span>
   </div>
 
-  <h1>Incendios en Castilla y León — mapa satelital en tiempo real</h1>
-  <p class="lead">Castilla y León es la comunidad autónoma más extensa de España y alberga enormes masas forestales en la Sierra de la Culebra (Zamora), El Bierzo y comarca de Sanabria (León), la Sierra de Gredos (Ávila) y las Arribes del Duero (Salamanca).</p>
+  <h1>Incendios en Canarias — mapa satelital en tiempo real</h1>
+  <p class="lead">Las Islas Canarias sufren episodios extremos de incendios forestales propiciados por episodios de calima, viento de componente sur/este y altas temperaturas. El pinar de pino canario (<em>Pinus canariensis</em>) y la intrincada orografía crean grandes incendios forestales de difícil control.</p>
 
-  <p>La combinación de extensos pinares de repoblación, terrenos montañosos y episodios estivales de vientos intensos y calor extremo favorece la aparición de grandes incendios forestales (GIF). La monitorización satelital por sensores VIIRS/MODIS permite detectar focos en áreas rurales despobladas de difícil vigilancia terrestre.</p>
+  <p>Los satélites VIIRS y MODIS monitorean constantemente las islas de Tenerife, Gran Canaria, La Palma, La Gomera y El Hierro. La monitorización espacial es clave debido a la rapidez con la que las condiciones meteorológicas estivales alimentan la propagación de los fuegos en cumbre y medianías.</p>
 
-  <p>El operativo INFOCAL de la Junta de Castilla y León gestiona la extinción de incendios. Ante cualquier emergencia, llama inmediatamente al <strong>112</strong>.</p>
+  <p>El Plan Específico de Protección Civil y Atención de Emergencias por Incendios Forestales de la Comunidad Autónoma de Canarias (INFOCA) coordina los medios insulares y autonómicos. En caso de emergencia, llama inmediatamente al <strong>112</strong>.</p>
 
   <div class="ad-slot">[ ESPACIO ADSENSE · in-article ]</div>
+
+  <h2>Preguntas frecuentes — Canarias</h2>
+  <div class="faq">
+    <details open>
+      <summary>¿Por qué son tan intensos los incendios en Canarias?</summary>
+      <p>La combinación de fuertes pendientes, masas de pino canario con alta densidad de tea, episodios de calima con humedad relativa extremadamente baja (<30%) y temperaturas superiores a 30 °C genera incendios fuera de capacidad de extinción.</p>
+    </details>
+    <details>
+      <summary>¿Qué islas son las más vulnerables a los grandes incendios?</summary>
+      <p>Tenerife, Gran Canaria y La Palma concentran históricamente los mayores eventos de grandes incendios forestales (GIF) por su extensión boscosa y orografía.</p>
+    </details>
+  </div>
 </section>
 
 <footer>
   <div>
     <div class="brand" style="margin-bottom:8px;"><a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div>
-    <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos: NASA FIRMS/GIBS. Viento: Open-Meteo. No es un servicio oficial de emergencias.</p>
+    <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos: NASA FIRMS/GIBS (VIIRS, MODIS). Viento: Open-Meteo. No es un servicio oficial de emergencias.</p>
   </div>
   <div class="footer-links">
     <a href="/aviso-legal">Aviso legal</a>
@@ -176,7 +188,13 @@ gtag('consent', 'default', {
 </div>
 
 <script>
-window.REGION_CONFIG = { name: 'Castilla y León', slug: 'castilla-y-leon', center: [41.6, -4.7], zoom: 7, bbox: '-7.2,40.0,-1.8,43.2' };
+window.REGION_CONFIG = {
+  name:   'Islas Canarias',
+  slug:   'canarias',
+  center: [28.3, -15.8],
+  zoom:   7,
+  bbox:   '-18.2,27.6,-13.4,29.5'
+};
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>

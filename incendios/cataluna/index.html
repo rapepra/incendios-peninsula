@@ -1,77 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Incendios en Cataluña hoy — Mapa en tiempo real | IncendiosES</title>
-<meta name="description" content="Mapa en tiempo real de incendios en Cataluña. Focos NASA VIIRS/MODIS en el Pirineo, Alt Empordà, Terres de l'Ebre y toda la comunidad. Humo y alertas en directo.">
+<meta name="description" content="Mapa en tiempo real de incendios forestales en Cataluña (Lleida, Tarragona, Girona, Barcelona). Focos activos detectados por satélite NASA VIIRS/MODIS.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.incendiosenespana.es/incendios/cataluna">
-<meta property="og:title" content="Incendios en Cataluña — Mapa satelital en tiempo real">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Incendios en Cataluña hoy — Mapa satelital en tiempo real">
+<meta property="og:description" content="Mapa de incendios forestales en Cataluña con datos NASA FIRMS (VIIRS/MODIS). Focos activos, humo y alertas.">
 <meta property="og:url" content="https://www.incendiosenespana.es/incendios/cataluna">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Incendios en Cataluña hoy","url":"https://www.incendiosenespana.es/incendios/cataluna","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://www.incendiosenespana.es/"},{"@type":"ListItem","position":2,"name":"Cataluña","item":"https://www.incendiosenespana.es/incendios/cataluna"}]}}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Incendios en Cataluña hoy — Mapa en tiempo real">
+<meta name="twitter:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Incendios en Cataluña hoy",
+  "url": "https://www.incendiosenespana.es/incendios/cataluna",
+  "description": "Mapa de incendios forestales en Cataluña con datos satelitales de la NASA.",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.incendiosenespana.es/" },
+      { "@type": "ListItem", "position": 2, "name": "Cataluña", "item": "https://www.incendiosenespana.es/incendios/cataluna" }
+    ]
+  }
+}
+</script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  'ad_storage': 'denied', 'ad_user_data': 'denied',
+  'ad_personalization': 'denied', 'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <link rel="stylesheet" href="/assets/shared.css">
 </head>
 <body>
+
 <header class="topbar">
   <div class="brand"><span class="dot"></span> <a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div>
-  <div class="ticker mono"><span id="tk-count">— focos activos</span><span id="tk-update">act. hace —</span><span>Fuente: NASA FIRMS · VIIRS/MODIS</span></div>
-  <div class="search-box"><input type="text" id="geo-search" placeholder="Buscar localidad, comarca…"><button id="geo-search-btn" type="button">Buscar</button></div>
+  <div class="ticker mono">
+    <span id="tk-count">— focos activos</span>
+    <span id="tk-update">act. hace —</span>
+    <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
+  </div>
+  <div class="search-box">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, comarca…" aria-label="Buscar localidad">
+    <button id="geo-search-btn" type="button">Buscar</button>
+  </div>
 </header>
+
 <main>
 <section class="map-wrap" aria-label="Mapa de incendios en Cataluña">
   <div id="map"></div>
-  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;"><span>⚠ Error al cargar focos</span><button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button></div>
-  <div class="floating-panel panel-filtros">
-    <h3>Capas</h3>
-    <div class="filtro-row"><span>VIIRS (375m)</span><label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>MODIS (1km)</span><label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label></div>
-    <div class="filtro-row"><span>Focos FIRMS</span><label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label></div>
-    <h3 style="margin-top:14px;">Rango</h3>
-    <div class="filtro-row"><select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;"><option value="24">Últimas 24 h</option><option value="48">Últimas 48 h</option><option value="168">Últimos 7 días</option></select></div>
+
+  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
+    <span>⚠ Error al cargar focos</span>
+    <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button>
   </div>
+
+  <div class="floating-panel panel-filtros" id="panel-filtros">
+    <h3>Capas</h3>
+    <div class="filtro-row">
+      <span>VIIRS (375m)</span>
+      <label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>MODIS (1km)</span>
+      <label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>Focos FIRMS</span>
+      <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Vista</h3>
+    <div class="filtro-row">
+      <span>🛰 Satélite</span>
+      <label class="switch"><input type="checkbox" id="cap-satelite"><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Rango</h3>
+    <div class="filtro-row">
+      <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
+        <option value="24">Últimas 24 h</option>
+        <option value="48">Últimas 48 h</option>
+        <option value="168">Últimos 7 días</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- FABs -->
+  <button class="fab fab-layers" id="fab-layers" aria-label="Mostrar capas" title="Capas">☰</button>
+  <button class="fab fab-location" id="fab-location" aria-label="Mi ubicación" title="Mi ubicación">📍</button>
+
   <div class="floating-panel panel-detalle" id="panel-detalle">
     <h3 id="pd-title">Foco seleccionado</h3>
     <div class="detalle-row"><span>Satélite</span><span id="pd-sat">—</span></div>
     <div class="detalle-row"><span>Confianza</span><span id="pd-conf">—</span></div>
     <div class="detalle-row"><span>Detectado</span><span id="pd-time">—</span></div>
     <div class="detalle-row"><span>Coordenadas</span><span id="pd-coords">—</span></div>
-    <div class="compass" id="compass-wrap"><span class="compass-label">Dirección estimada del humo</span><div id="compass-svg"></div><span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">cargando viento…</span></div>
+    <div class="compass" id="compass-wrap">
+      <span class="compass-label">Dirección estimada del humo</span>
+      <div id="compass-svg"></div>
+      <span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">cargando viento…</span>
+    </div>
   </div>
+
   <div class="floating-panel legend">
     <div class="legend-item"><span class="legend-dot" style="background:var(--fire);"></span> Foco activo</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--alert);"></span> Nuevo (última hora)</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--smoke);"></span> Dirección del humo</div>
   </div>
+
   <div class="toast" id="toast"></div>
 </section>
+
 <section class="content">
-  <div class="breadcrumb"><a href="/">IncendiosES</a><span class="sep">›</span><span>Cataluña</span></div>
-  <h1>Incendios en Cataluña — mapa satelital en tiempo real</h1>
-  <p class="lead">Cataluña presenta una gran diversidad de paisajes forestales, desde los pinares y encinas mediterráneos de las tierras bajas hasta los hayedos y abetales del Pirineo. Los grandes incendios de 1994 en el Bages y la Conca de Barberà marcaron un antes y un después en la política forestal catalana.</p>
-  <p>Las comarcas de mayor riesgo son las Terres de l'Ebre (viento Mestral intenso), el Alt Empordà (Tramuntana), el Baix Ebre y las comarcas del prelitoral barcelonés, donde la interfaz urbano-forestal es especialmente problemática. El Plan INFOCAT coordina los medios de extinción de los Bombers de la Generalitat.</p>
-  <p>Los episodios de viento cálido y seco del interior (Ponent, Mestral) son los principales factores de propagación rápida. La temporada de mayor riesgo se extiende de junio a septiembre. Para emergencias, llama al <strong>112</strong>.</p>
-  <div class="ad-slot">[ ESPACIO ADSENSE · in-article ]</div>
-  <div class="faq">
-    <details open>
-      <summary>¿Qué vientos favorecen los grandes incendios en Cataluña?</summary>
-      <p>El Mestral (viento del noroeste) y la Tramuntana (norte) son los más peligrosos para la propagación de incendios. Son vientos secos y fuertes que bajan la humedad relativa por debajo del 20% y aumentan la velocidad de propagación del fuego de forma exponencial.</p>
-    </details>
+  <div class="breadcrumb">
+    <a href="/">IncendiosES</a>
+    <span class="sep">›</span>
+    <span>Cataluña</span>
   </div>
+
+  <h1>Incendios en Cataluña — mapa satelital en tiempo real</h1>
+  <p class="lead">Cataluña presenta un riesgo elevado de incendios forestales en verano, especialmente en las comarcas del Prepirineo, Cataluña Central (Bages, Solsonès), Terres de l'Ebre y el Empordà, alimentados por vientos intensos como la Tramontana o el Ponent.</p>
+
+  <p>Los Bombers de la Generalitat de Catalunya y los Agentes Rurales operan el plan INFOCAT para la prevención y respuesta ante incendios. El mapa muestra los focos térmicos detectados en tiempo real sobre territorio catalán por los satélites VIIRS y MODIS de la NASA.</p>
+
+  <p>En caso de detectar una columna de humo o una emergencia por fuego, llama de inmediato al <strong>112</strong>.</p>
+
+  <div class="ad-slot">[ ESPACIO ADSENSE · in-article ]</div>
 </section>
+
 <footer>
-  <div><div class="brand" style="margin-bottom:8px;"><a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div><p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos: NASA FIRMS/GIBS. Viento: Open-Meteo. No es un servicio oficial de emergencias.</p></div>
-  <div class="footer-links"><a href="/aviso-legal">Aviso legal</a><a href="/privacidad">Privacidad</a><a href="/cookies">Cookies</a><a href="/">← Mapa general</a></div>
+  <div>
+    <div class="brand" style="margin-bottom:8px;"><a href="/" style="text-decoration:none;color:inherit;">IncendiosES</a></div>
+    <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos: NASA FIRMS/GIBS. Viento: Open-Meteo. No es un servicio oficial de emergencias.</p>
+  </div>
+  <div class="footer-links">
+    <a href="/aviso-legal">Aviso legal</a>
+    <a href="/privacidad">Privacidad</a>
+    <a href="/cookies">Cookies</a>
+    <a href="/">← Mapa general</a>
+  </div>
 </footer>
 </main>
+
 <div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
-  <p style="margin:0;max-width:70ch;">Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> y podemos usar cookies de <strong style="color:#eaedf3;">publicidad de Google AdSense</strong> con tu consentimiento. <a href="/cookies" style="color:var(--fire);">Más info</a></p>
-  <div style="display:flex;gap:10px;flex-shrink:0;"><button id="cookie-reject" class="cookie-btn-reject">Solo necesarias</button><button id="cookie-accept" class="cookie-btn-accept">Aceptar todas</button></div>
+  <p style="margin:0;max-width:70ch;">
+    Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> propias y podemos usar cookies de <strong style="color:#eaedf3;">publicidad de Google AdSense</strong> con tu consentimiento.
+    <a href="/cookies" style="color:var(--fire);">Más info</a>
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="cookie-reject" class="cookie-btn-reject">Solo necesarias</button>
+    <button id="cookie-accept" class="cookie-btn-accept">Aceptar todas</button>
+  </div>
 </div>
-<script>window.REGION_CONFIG = { name: 'Cataluña', slug: 'cataluna', center: [41.7, 1.7], zoom: 8, bbox: '0.1,40.5,3.3,42.9' };</script>
+
+<script>
+window.REGION_CONFIG = { name: 'Cataluña', slug: 'cataluna', center: [41.8, 1.5], zoom: 8, bbox: '0.2,40.5,3.3,42.9' };
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="/assets/region-map.js"></script>
 </body>
 </html>
