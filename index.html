@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================
+     SEO — metadatos primarios
+     ============================================================ -->
+<title>Mapa de Incendios en España y Portugal en Tiempo Real | IncendiosES</title>
+<meta name="description" content="Mapa en directo de incendios forestales en España y Portugal con datos satelitales de la NASA (VIIRS/MODIS). Detección de nuevos focos, dirección del humo según el viento real y alertas por comunidad autónoma.">
+<meta name="keywords" content="incendios España hoy, mapa incendios forestales, incendios Portugal, fuego en directo, humo incendio, IFN, VIIRS NASA España, incendios comunidad autónoma">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://www.incendiosenespana.es/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IncendiosES">
+<meta property="og:title" content="Mapa de Incendios en España y Portugal en Tiempo Real">
+<meta property="og:description" content="Focos activos, nuevos incendios detectados por satélite y previsión de dirección del humo según el viento, actualizado sobre España y Portugal.">
+<meta property="og:url" content="https://www.incendiosenespana.es/">
+<meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:image" content="https://www.incendiosenespana.es/og-cover.jpg">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mapa de Incendios en España y Portugal en Tiempo Real">
+<meta name="twitter:description" content="Focos activos por satélite, nuevos incendios y previsión de humo por viento real.">
+
+<!-- hreflang: preparado para versión portuguesa futura (silo geo-SEO) -->
+<link rel="alternate" hreflang="es" href="https://www.incendiosenespana.es/" />
+<link rel="alternate" hreflang="pt" href="https://www.incendiosenespana.es/pt/" />
+<link rel="alternate" hreflang="x-default" href="https://www.incendiosenespana.es/" />
+
+<!-- JSON-LD: WebSite + Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "IncendiosES",
+  "url": "https://www.incendiosenespana.es/",
+  "description": "Mapa en tiempo real de incendios forestales en España y Portugal con datos satelitales.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.incendiosenespana.es/buscar?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- JSON-LD: FAQPage (rich snippets en Google) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿De dónde salen los datos de los incendios?",
+      "acceptedAnswer": { "@type": "Answer", "text": "De los sensores VIIRS y MODIS de los satélites de la NASA, a través del servicio público FIRMS, que detecta anomalías térmicas en la superficie terrestre." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cada cuánto se actualiza el mapa?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Los satélites VIIRS pasan por España varias veces al día; los nuevos focos suelen aparecer entre 1 y 12 horas después de producirse, según el satélite y la cobertura de nubes." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se calcula la dirección del humo?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A partir de la velocidad y dirección del viento en tiempo real sobre el punto del incendio. Es una estimación orientativa, no un modelo oficial de dispersión de humo." }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- ============================================================
+     AdSense — pega aquí tu script una vez tengas la cuenta aprobada:
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script>
+     ============================================================ -->
+
+<style>
+:root{
+  --bg:#10131a;
+  --bg-elevated:#171b24;
+  --panel:#171b24;
+  --panel-border:#262c3a;
+  --text:#eaedf3;
+  --text-muted:#8892a6;
+  --fire:#ff5a36;
+  --fire-glow:#ffb020;
+  --smoke:#7c93aa;
+  --alert:#ffd23c;
+  --safe:#3ddc8a;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  line-height:1.5;
+}
+a{color:inherit;}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.01em;}
+.mono{font-family:var(--font-mono);}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  display:flex;align-items:center;gap:20px;
+  padding:14px 24px;
+  border-bottom:1px solid var(--panel-border);
+  background:linear-gradient(180deg, rgba(16,19,26,0.98), rgba(16,19,26,0.92));
+  position:sticky;top:0;z-index:1000;
+  flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--fire);box-shadow:0 0 0 4px rgba(255,90,54,.18);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,54,.35);}70%{box-shadow:0 0 0 10px rgba(255,90,54,0);}100%{box-shadow:0 0 0 0 rgba(255,90,54,0);}}
+
+.ticker{
+  font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);
+  display:flex;gap:18px;flex-wrap:wrap;
+}
+.ticker b{color:var(--fire-glow);font-weight:600;}
+
+.search-box{margin-left:auto;display:flex;gap:8px;}
+.search-box input{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);color:var(--text);
+  padding:8px 12px;border-radius:8px;font-family:var(--font-body);font-size:.85rem;min-width:220px;
+}
+.search-box button{
+  background:var(--fire);border:none;color:#161616;font-weight:600;
+  padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;
+}
+
+/* ---------- Layout del mapa ---------- */
+.map-wrap{position:relative;height:78vh;min-height:520px;width:100%;}
+#map{height:100%;width:100%;background:#0b0d12;}
+.leaflet-container{font-family:var(--font-body);}
+
+.floating-panel{
+  position:absolute;z-index:900;
+  background:rgba(23,27,36,.92);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--panel-border);
+  border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.panel-filtros{top:16px;left:16px;padding:16px;width:220px;}
+.panel-filtros h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px;}
+.filtro-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:.85rem;border-bottom:1px solid var(--panel-border);}
+.filtro-row:last-child{border-bottom:none;}
+.switch{position:relative;width:34px;height:19px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#2c3242;border-radius:20px;cursor:pointer;transition:.2s;}
+.slider:before{content:"";position:absolute;width:14px;height:14px;left:2.5px;top:2.5px;background:#fff;border-radius:50%;transition:.2s;}
+input:checked + .slider{background:var(--fire);}
+input:checked + .slider:before{transform:translateX(15px);}
+
+.panel-detalle{
+  bottom:16px;left:16px;padding:18px;width:280px;max-height:46%;overflow-y:auto;
+  display:none;
+}
+.panel-detalle.show{display:block;}
+.panel-detalle h3{font-size:1rem;margin-bottom:4px;}
+.badge-nuevo{
+  display:inline-block;background:var(--alert);color:#161616;font-family:var(--font-mono);
+  font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:5px;margin-left:6px;letter-spacing:.03em;
+}
+.detalle-row{display:flex;justify-content:space-between;font-size:.82rem;padding:5px 0;border-bottom:1px dashed var(--panel-border);}
+.detalle-row span:last-child{font-family:var(--font-mono);color:var(--text-muted);}
+
+.compass{
+  margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.compass-label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;}
+.compass svg{filter:drop-shadow(0 0 6px rgba(124,147,170,.35));}
+
+.legend{
+  bottom:16px;right:16px;padding:12px 16px;font-size:.78rem;color:var(--text-muted);
+  display:flex;flex-direction:column;gap:6px;
+}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+.toast{
+  position:absolute;top:16px;right:16px;z-index:950;
+  background:rgba(23,27,36,.95);border:1px solid var(--alert);border-radius:10px;
+  padding:12px 16px;font-size:.85rem;max-width:260px;display:none;
+  box-shadow:0 10px 24px rgba(0,0,0,.4);
+}
+.toast.show{display:block;animation:slidein .3s ease;}
+@keyframes slidein{from{transform:translateY(-8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+.demo-flag{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;
+  background:rgba(255,210,60,.12);border:1px solid var(--alert);color:var(--alert);
+  font-family:var(--font-mono);font-size:.72rem;padding:5px 12px;border-radius:20px;
+}
+
+/* ---------- Contenido SEO bajo el mapa ---------- */
+.content{max-width:1100px;margin:0 auto;padding:60px 24px;}
+.content h2{font-size:1.6rem;margin-bottom:14px;}
+.content p{color:var(--text-muted);margin-bottom:14px;max-width:70ch;}
+.content .lead{color:var(--text);font-size:1.05rem;}
+
+.grid-cca{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:20px;
+}
+.grid-cca a{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);border-radius:10px;
+  padding:12px 14px;font-size:.85rem;text-decoration:none;color:var(--text);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.grid-cca a:hover{border-color:var(--fire);}
+.grid-cca .n{font-family:var(--font-mono);color:var(--fire-glow);font-size:.78rem;}
+
+.faq{margin-top:16px;}
+.faq details{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);border-radius:10px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.faq summary{cursor:pointer;font-weight:600;font-family:var(--font-display);font-size:.95rem;}
+.faq p{margin-top:8px;margin-bottom:0;}
+
+.ad-slot{
+  border:1px dashed var(--panel-border);border-radius:10px;
+  padding:26px;text-align:center;color:var(--text-muted);font-size:.78rem;
+  font-family:var(--font-mono);margin:34px 0;
+}
+
+footer{
+  border-top:1px solid var(--panel-border);padding:30px 24px;
+  display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;
+  color:var(--text-muted);font-size:.8rem;max-width:1100px;margin:0 auto;
+}
+footer a{text-decoration:none;color:var(--text-muted);}
+footer a:hover{color:var(--text);}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;}
+
+@media (max-width:760px){
+  .panel-filtros{width:150px;}
+  .panel-detalle{width:220px;}
+  .search-box input{min-width:120px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BARRA SUPERIOR
+     ============================================================ -->
+<header class="topbar">
+  <div class="brand"><span class="dot"></span> IncendiosES</div>
+  <div class="ticker mono">
+    <span id="tk-count">— focos activos</span>
+    <span id="tk-update">act. hace —</span>
+    <span>Fuente: NASA FIRMS · VIIRS/MODIS</span>
+  </div>
+  <div class="search-box">
+    <input type="text" id="geo-search" placeholder="Buscar localidad, provincia…">
+    <button id="geo-search-btn" type="button">Buscar</button>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAPA
+     ============================================================ -->
+<main>
+<section class="map-wrap" aria-label="Mapa en directo de incendios en España y Portugal">
+  <div id="map"></div>
+
+  <!-- Estado de error al cargar focos — visible solo si /api/focos falla -->
+  <div id="error-focos" role="alert" style="display:none;position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);color:#ff8080;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:6px 14px;border-radius:20px;align-items:center;gap:8px;white-space:nowrap;">
+    <span>⚠ Error al cargar focos</span>
+    <button onclick="cargarFocosReales(diasActual)" style="background:none;border:none;color:#ff8080;cursor:pointer;text-decoration:underline;font-size:.72rem;">reintentar</button>
+  </div>
+
+  <div class="floating-panel panel-filtros">
+    <h3>Capas</h3>
+    <div class="filtro-row">
+      <span>VIIRS (375m)</span>
+      <label class="switch"><input type="checkbox" id="cap-viirs" checked><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>MODIS (1km)</span>
+      <label class="switch"><input type="checkbox" id="cap-modis"><span class="slider"></span></label>
+    </div>
+    <div class="filtro-row">
+      <span>Focos FIRMS</span>
+      <label class="switch"><input type="checkbox" id="cap-demo" checked><span class="slider"></span></label>
+    </div>
+    <h3 style="margin-top:14px;">Rango</h3>
+    <div class="filtro-row">
+      <select id="rango" style="width:100%;background:var(--bg-elevated);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:5px;">
+        <option value="24">Últimas 24 h</option>
+        <option value="48">Últimas 48 h</option>
+        <option value="168">Últimos 7 días</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="floating-panel panel-detalle" id="panel-detalle">
+    <h3 id="pd-title">Foco seleccionado</h3>
+    <div class="detalle-row"><span>Satélite</span><span id="pd-sat">—</span></div>
+    <div class="detalle-row"><span>Confianza</span><span id="pd-conf">—</span></div>
+    <div class="detalle-row"><span>Detectado</span><span id="pd-time">—</span></div>
+    <div class="detalle-row"><span>Coordenadas</span><span id="pd-coords">—</span></div>
+    <div class="compass" id="compass-wrap">
+      <span class="compass-label">Dirección estimada del humo</span>
+      <div id="compass-svg"></div>
+      <span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">cargando viento…</span>
+    </div>
+  </div>
+
+  <div class="floating-panel legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--fire);"></span> Foco activo</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--alert);"></span> Nuevo (última hora)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--smoke);"></span> Dirección del humo</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</section>
+
+<!-- espacio reservado para anuncio — encaja de forma natural tras el "hero" del mapa -->
+<div class="content"><div class="ad-slot">[ ESPACIO ADSENSE · display responsive · 728×90 / 320×100 ]</div></div>
+
+<!-- ============================================================
+     CONTENIDO SEO (indexable, texto real, enlazado interno)
+     ============================================================ -->
+<section class="content">
+  <h2>Mapa de incendios forestales en España y Portugal, actualizado con satélites de la NASA</h2>
+  <p class="lead">Este mapa muestra los focos de calor detectados por los sensores VIIRS y MODIS a bordo de satélites de la NASA sobre la Península Ibérica. Cada punto representa una anomalía térmica compatible con un incendio forestal, agrícola o industrial; el color y el tamaño indican la confianza de la detección y el tiempo transcurrido desde que se registró.</p>
+  <p>A diferencia de un aviso oficial de un servicio de emergencias, esta herramienta ofrece una vista agregada y de acceso abierto pensada para seguimiento informativo. Para una emergencia en curso, contacta siempre con el 112.</p>
+
+  <h2 style="margin-top:40px;">Incendios por comunidad autónoma</h2>
+  <p>Consulta el detalle de focos activos en cada comunidad. Esta estructura de enlazado interno por región es la base de una arquitectura de geo-SEO: cada página localizada puede posicionar para búsquedas como “incendios en Galicia hoy” o “fuego cerca de Ourense”.</p>
+  <div class="grid-cca">
+    <a href="/incendios/galicia">Galicia <span class="n">→</span></a>
+    <a href="/incendios/asturias">Asturias <span class="n">→</span></a>
+    <a href="/incendios/castilla-y-leon">Castilla y León <span class="n">→</span></a>
+    <a href="/incendios/andalucia">Andalucía <span class="n">→</span></a>
+    <a href="/incendios/extremadura">Extremadura <span class="n">→</span></a>
+    <a href="/incendios/cataluna">Cataluña <span class="n">→</span></a>
+    <a href="/incendios/comunidad-valenciana">C. Valenciana <span class="n">→</span></a>
+    <a href="/incendios/portugal-centro">Portugal · Centro <span class="n">→</span></a>
+    <a href="/incendios/portugal-norte">Portugal · Norte <span class="n">→</span></a>
+  </div>
+
+  <div class="ad-slot">[ ESPACIO ADSENSE · in-article · se inserta entre bloques de contenido, nunca antes del contenido útil ]</div>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="faq">
+    <details open>
+      <summary>¿De dónde salen los datos de los incendios?</summary>
+      <p>De los sensores VIIRS y MODIS de los satélites de la NASA, a través del servicio público FIRMS (Fire Information for Resource Management System), que detecta anomalías térmicas en la superficie terrestre.</p>
+    </details>
+    <details>
+      <summary>¿Cada cuánto se actualiza el mapa?</summary>
+      <p>Los satélites VIIRS pasan por España varias veces al día; los nuevos focos suelen aparecer entre 1 y 12 horas después de producirse, según el satélite y la cobertura de nubes.</p>
+    </details>
+    <details>
+      <summary>¿Cómo se calcula la dirección del humo?</summary>
+      <p>A partir de la velocidad y dirección del viento en tiempo real sobre el punto del incendio. Es una estimación orientativa, no un modelo oficial de dispersión de humo como HYSPLIT o CAMS.</p>
+    </details>
+    <details>
+      <summary>¿Puede este mapa sustituir a un aviso oficial?</summary>
+      <p>No. Es una herramienta informativa de acceso abierto. Ante una emergencia real, contacta siempre con el 112 o con la fuente oficial de tu comunidad autónoma.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="brand" style="margin-bottom:8px;">IncendiosES</div>
+    <p style="max-width:40ch;color:var(--text-muted);font-size:.8rem;">Datos de detección: NASA FIRMS/GIBS (VIIRS, MODIS). Datos de viento: Open-Meteo. Este sitio no es un servicio oficial de emergencias.</p>
+  </div>
+  <div class="footer-links">
+    <a href="/aviso-legal">Aviso legal</a>
+    <a href="/privacidad">Política de privacidad</a>
+    <a href="/cookies">Cookies</a>
+    <a href="/contacto">Contacto</a>
+    <a href="/sitemap.xml">Sitemap</a>
+  </div>
+</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+/* ============================================================
+   MAPA BASE
+   ============================================================ */
+const map = L.map('map', { zoomControl: true, attributionControl: true })
+  .setView([40.2, -4.5], 6);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 12
+}).addTo(map);
+
+/* ============================================================
+   CAPA REAL DE INCENDIOS — NASA GIBS (VIIRS / MODIS)
+   Servicio público, sin API key. Actualiza la fecha (TIME) cada carga.
+   Doc: https://nasa-gibs.github.io/gibs-api-docs/
+   ============================================================ */
+const hoy = new Date().toISOString().slice(0, 10);
+
+const capaViirs = L.tileLayer(
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/${hoy}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
+  { maxZoom: 9, maxNativeZoom: 9, opacity: 0.95, attribution: 'NASA GIBS / VIIRS' }
+).addTo(map);
+
+const capaModis = L.tileLayer(
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Thermal_Anomalies_All/default/${hoy}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png`,
+  { maxZoom: 7, maxNativeZoom: 7, opacity: 0.9, attribution: 'NASA GIBS / MODIS' }
+);
+
+document.getElementById('cap-viirs').addEventListener('change', e =>
+  e.target.checked ? map.addLayer(capaViirs) : map.removeLayer(capaViirs));
+document.getElementById('cap-modis').addEventListener('change', e =>
+  e.target.checked ? map.addLayer(capaModis) : map.removeLayer(capaModis));
+
+/* ============================================================
+   PUNTOS INTERACTIVOS — DATOS REALES (NASA FIRMS via /api/focos)
+   La key de FIRMS vive en el backend (Vercel Function), NUNCA
+   en este HTML. Si /api/focos falla, se muestra un error claro;
+   nunca se usan datos falsos silenciosos.
+   ============================================================ */
+const capaFocos = L.layerGroup().addTo(map);
+const marcadores = {};
+let focosActuales = [];
+let diasActual = 1;
+
+/** Tiempo relativo legible a partir de un ISO timestamp */
+function tiempoRelativo(tsISO) {
+  const diff = Date.now() - new Date(tsISO).getTime();
+  const min = Math.round(diff / 60000);
+  if (isNaN(min) || min < 0) return '—';
+  if (min < 1)  return 'ahora mismo';
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24)   return `hace ${h} h`;
+  return `hace ${Math.floor(h / 24)} días`;
+}
+
+function crearIcono(esNuevo) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:14px;height:14px;border-radius:50%;
+      background:${esNuevo ? 'var(--alert)' : 'var(--fire)'};
+      box-shadow:0 0 0 5px ${esNuevo ? 'rgba(255,210,60,.25)' : 'rgba(255,90,54,.25)'};"></div>`,
+    iconSize: [14, 14]
+  });
+}
+
+function pintarFocos(focos, nuevosIds = []) {
+  capaFocos.clearLayers();
+  const nuevosSet = new Set(nuevosIds);
+  focos.forEach(f => {
+    const esNuevo = nuevosSet.has(f.id);
+    const marker = L.marker([f.lat, f.lon], { icon: crearIcono(esNuevo) }).addTo(capaFocos);
+    marker.on('click', () => mostrarDetalle(f, esNuevo));
+    marcadores[f.id] = marker;
+  });
+}
+
+function actualizarTicker(total, ts) {
+  document.getElementById('tk-count').innerHTML = `<b>${total}</b> focos activos`;
+  document.getElementById('tk-update').textContent = `act. ${tiempoRelativo(ts)}`;
+}
+
+function mostrarErrorFocos(msg) {
+  const el = document.getElementById('error-focos');
+  if (el) { el.querySelector('span').textContent = '⚠ ' + msg; el.style.display = 'flex'; }
+  document.getElementById('tk-count').innerHTML = '<b>⚠</b> error al cargar focos';
+}
+
+async function cargarFocosReales(dias) {
+  dias = dias || diasActual;
+  diasActual = dias;
+  const errEl = document.getElementById('error-focos');
+  if (errEl) errEl.style.display = 'none';
+
+  try {
+    const res = await fetch(`/api/focos?dias=${dias}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data.error) {
+      mostrarErrorFocos(data.message || 'Error al obtener datos de incendios');
+      return;
+    }
+
+    focosActuales = data.focos;
+    pintarFocos(data.focos, data.nuevosIds || []);
+    actualizarTicker(data.total, data.ts);
+
+    if (!data.cached && data.nuevosIds && data.nuevosIds.length > 0) {
+      const n = data.nuevosIds.length;
+      mostrarToast(`🔥 ${n} nuevo${n > 1 ? 's focos detectados' : ' foco detectado'} por satélite`);
+    }
+  } catch (err) {
+    mostrarErrorFocos('No se pudo conectar con el servidor de datos.');
+  }
+}
+
+document.getElementById('cap-demo').addEventListener('change', e =>
+  e.target.checked ? map.addLayer(capaFocos) : map.removeLayer(capaFocos));
+
+document.getElementById('rango').addEventListener('change', e => {
+  const h = parseInt(e.target.value, 10);
+  const dias = h <= 24 ? 1 : h <= 48 ? 2 : 7;
+  cargarFocosReales(dias);
+});
+
+/* ============================================================
+   DETALLE DE FOCO + VIENTO REAL (Open-Meteo, gratuito, sin key)
+   ============================================================ */
+async function mostrarDetalle(f, esNuevo) {
+  const panel = document.getElementById('panel-detalle');
+  panel.classList.add('show');
+  // Título: nombre del satélite (más útil que el ID interno)
+  document.getElementById('pd-title').innerHTML =
+    (f.sat || 'Foco activo') + (esNuevo ? '<span class="badge-nuevo">NUEVO</span>' : '');
+  document.getElementById('pd-sat').textContent  = f.sat  || '—';
+  document.getElementById('pd-conf').textContent = f.conf || '—';
+  document.getElementById('pd-time').textContent = tiempoRelativo(f.ts); // ISO timestamp
+  document.getElementById('pd-coords').textContent = `${f.lat.toFixed(4)}, ${f.lon.toFixed(4)}`;
+  document.getElementById('wind-info').textContent = 'cargando viento…';
+  document.getElementById('compass-svg').innerHTML = '';
+
+  map.flyTo([f.lat, f.lon], 8, { duration: 0.6 });
+
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${f.lat}&longitude=${f.lon}&current=wind_speed_10m,wind_direction_10m`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    const vel  = data.current.wind_speed_10m;
+    const dir  = data.current.wind_direction_10m;
+    dibujarBrujula(dir, vel);
+    dibujarConoHumo(f, dir, vel);
+    document.getElementById('wind-info').textContent =
+      `viento real: ${vel} km/h desde ${Math.round(dir)}°`;
+  } catch (err) {
+    document.getElementById('wind-info').textContent = 'no se pudo obtener el viento ahora mismo';
+  }
+}
+
+function dibujarBrujula(dirDesde, vel){
+  // dirDesde = de dónde viene el viento; el humo se desplaza hacia dirDesde+180
+  const dirHacia = (dirDesde + 180) % 360;
+  const svg = `
+  <svg width="90" height="90" viewBox="0 0 90 90">
+    <circle cx="45" cy="45" r="38" fill="none" stroke="#262c3a" stroke-width="1.5"/>
+    <circle cx="45" cy="45" r="26" fill="none" stroke="#262c3a" stroke-width="1"/>
+    <text x="45" y="12" fill="#8892a6" font-size="8" text-anchor="middle" font-family="IBM Plex Mono">N</text>
+    <g transform="rotate(${dirHacia} 45 45)">
+      <line x1="45" y1="45" x2="45" y2="12" stroke="var(--smoke)" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="45,6 40,16 50,16" fill="var(--smoke)"/>
+    </g>
+    <circle cx="45" cy="45" r="4" fill="var(--fire)"/>
+  </svg>`;
+  document.getElementById('compass-svg').innerHTML = svg;
+}
+
+/* Capa del cono de humo sobre el propio mapa */
+let capaCono = null;
+function dibujarConoHumo(f, dirDesde, vel){
+  if (capaCono) map.removeLayer(capaCono);
+  const dirHacia = (dirDesde + 180) % 360;
+  const rad = dirHacia * Math.PI / 180;
+  const distKm = Math.min(2 + vel * 0.9, 60); // más viento → cono más largo (tope orientativo)
+  const anchoGrados = 22; // apertura del cono
+
+  const destino = (bearingDeg, distanciaKm) => {
+    const R = 6371;
+    const lat1 = f.lat * Math.PI/180, lon1 = f.lon * Math.PI/180;
+    const brng = bearingDeg * Math.PI/180;
+    const lat2 = Math.asin(Math.sin(lat1)*Math.cos(distanciaKm/R) + Math.cos(lat1)*Math.sin(distanciaKm/R)*Math.cos(brng));
+    const lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(distanciaKm/R)*Math.cos(lat1), Math.cos(distanciaKm/R)-Math.sin(lat1)*Math.sin(lat2));
+    return [lat2*180/Math.PI, lon2*180/Math.PI];
+  };
+
+  const p1 = destino(dirHacia - anchoGrados, distKm);
+  const p2 = destino(dirHacia + anchoGrados, distKm);
+
+  capaCono = L.polygon([[f.lat, f.lon], p1, p2], {
+    color: 'var(--smoke)', weight: 1, fillColor: '#7c93aa', fillOpacity: 0.18, dashArray: '4 4'
+  }).addTo(map);
+}
+
+/* ============================================================
+   TOAST — notificación flotante
+   ============================================================ */
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 6000);
+}
+
+/* ============================================================
+   CONSENTIMIENTO DE COOKIES (RGPD)
+   AdSense solo se carga si el usuario acepta explícitamente.
+   El consentimiento se guarda en localStorage 6 meses.
+   ============================================================ */
+function gestionarConsentimiento() {
+  const consent   = localStorage.getItem('consent_ads');
+  const ts        = localStorage.getItem('consent_ts');
+  const seisMeses = 6 * 30 * 24 * 60 * 60 * 1000;
+  if (consent !== null && ts && (Date.now() - parseInt(ts, 10) < seisMeses)) {
+    if (consent === '1') activarAdsense();
+    return;
+  }
+  document.getElementById('cookie-banner').style.display = 'flex';
+}
+
+function activarAdsense() {
+  /* Descomenta y sustituye ca-pub-XXXX cuando tengas AdSense aprobado:
+  if (document.querySelector('script[src*="adsbygoogle"]')) return;
+  const s = document.createElement('script');
+  s.async = true;
+  s.src   = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX';
+  s.crossOrigin = 'anonymous';
+  document.head.appendChild(s); */
+}
+
+document.getElementById('cookie-accept').addEventListener('click', () => {
+  localStorage.setItem('consent_ads', '1');
+  localStorage.setItem('consent_ts', String(Date.now()));
+  document.getElementById('cookie-banner').style.display = 'none';
+  activarAdsense();
+});
+document.getElementById('cookie-reject').addEventListener('click', () => {
+  localStorage.setItem('consent_ads', '0');
+  localStorage.setItem('consent_ts', String(Date.now()));
+  document.getElementById('cookie-banner').style.display = 'none';
+});
+
+gestionarConsentimiento();
+
+/* ─── INICIO: carga focos reales + sondeo automático ─── */
+cargarFocosReales(1);
+setInterval(() => cargarFocosReales(diasActual), 20 * 60 * 1000);
+
+/* ============================================================
+   BUSCADOR DE LOCALIDAD (geocoding Nominatim/OSM, gratuito)
+   ============================================================ */
+document.getElementById('geo-search-btn').addEventListener('click', buscar);
+document.getElementById('geo-search').addEventListener('keydown', e => { if (e.key === 'Enter') buscar(); });
+
+async function buscar(){
+  const q = document.getElementById('geo-search').value.trim();
+  if (!q) return;
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=es,pt&q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    if (data[0]) map.flyTo([+data[0].lat, +data[0].lon], 9, { duration: 0.8 });
+    else mostrarToast('No se ha encontrado esa localidad');
+  }catch(e){ mostrarToast('Buscador no disponible ahora mismo'); }
+}
+</script>
+
+<!-- ============================================================
+     AdSense — descomenta y sustituye el slot cuando tengas cuenta aprobada:
+     <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXX"
+          data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+     ============================================================ -->
+
+<!-- ============================================================
+     BANNER DE CONSENTIMIENTO DE COOKIES (RGPD)
+     Visible solo si el usuario no ha respondido o el consentimiento
+     tiene más de 6 meses. Gestión en JS (gestionarConsentimiento).
+     ============================================================ -->
+<div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
+  <p style="margin:0;max-width:70ch;">
+    Usamos <strong style="color:#eaedf3;">cookies técnicas</strong> propias y podemos usar
+    cookies de <strong style="color:#eaedf3;">publicidad de Google AdSense</strong> con tu
+    consentimiento. Más info en nuestra
+    <a href="/cookies" style="color:var(--fire);">política de cookies</a>.
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="cookie-reject"
+      style="background:transparent;border:1px solid var(--panel-border);color:var(--text-muted);
+        padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;">
+      Solo necesarias
+    </button>
+    <button id="cookie-accept"
+      style="background:var(--fire);border:none;color:#161616;font-weight:600;
+        padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;">
+      Aceptar todas
+    </button>
+  </div>
+</div>
+
+<style>
+#cookie-banner{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:2000;
+  background:rgba(23,27,36,.97);border-top:1px solid var(--panel-border);
+  padding:14px 24px;align-items:center;gap:16px;flex-wrap:wrap;
+  font-size:.82rem;color:var(--text-muted);justify-content:space-between;
+}
+</style>
+</body>
+</html>

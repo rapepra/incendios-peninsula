@@ -1,0 +1,231 @@
+/* ============================================================
+   shared.css — Estilos compartidos de IncendiosES
+   Usado por páginas de CCA (/incendios/*) y páginas legales.
+   index.html tiene sus propios estilos inline para independencia.
+   ============================================================ */
+:root{
+  --bg:#10131a;
+  --bg-elevated:#171b24;
+  --panel:#171b24;
+  --panel-border:#262c3a;
+  --text:#eaedf3;
+  --text-muted:#8892a6;
+  --fire:#ff5a36;
+  --fire-glow:#ffb020;
+  --smoke:#7c93aa;
+  --alert:#ffd23c;
+  --safe:#3ddc8a;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  line-height:1.5;
+}
+a{color:inherit;}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.01em;}
+.mono{font-family:var(--font-mono);}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  display:flex;align-items:center;gap:20px;
+  padding:14px 24px;
+  border-bottom:1px solid var(--panel-border);
+  background:linear-gradient(180deg, rgba(16,19,26,0.98), rgba(16,19,26,0.92));
+  position:sticky;top:0;z-index:1000;
+  flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--fire);box-shadow:0 0 0 4px rgba(255,90,54,.18);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,54,.35);}70%{box-shadow:0 0 0 10px rgba(255,90,54,0);}100%{box-shadow:0 0 0 0 rgba(255,90,54,0);}}}
+
+.ticker{
+  font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);
+  display:flex;gap:18px;flex-wrap:wrap;
+}
+.ticker b{color:var(--fire-glow);font-weight:600;}
+
+.search-box{margin-left:auto;display:flex;gap:8px;}
+.search-box input{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);color:var(--text);
+  padding:8px 12px;border-radius:8px;font-family:var(--font-body);font-size:.85rem;min-width:220px;
+}
+.search-box button{
+  background:var(--fire);border:none;color:#161616;font-weight:600;
+  padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;
+}
+
+/* ---------- Layout del mapa ---------- */
+.map-wrap{position:relative;height:78vh;min-height:520px;width:100%;}
+#map{height:100%;width:100%;background:#0b0d12;}
+.leaflet-container{font-family:var(--font-body);}
+
+.floating-panel{
+  position:absolute;z-index:900;
+  background:rgba(23,27,36,.92);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--panel-border);
+  border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.panel-filtros{top:16px;left:16px;padding:16px;width:220px;}
+.panel-filtros h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px;}
+.filtro-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:.85rem;border-bottom:1px solid var(--panel-border);}
+.filtro-row:last-child{border-bottom:none;}
+.switch{position:relative;width:34px;height:19px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#2c3242;border-radius:20px;cursor:pointer;transition:.2s;}
+.slider:before{content:"";position:absolute;width:14px;height:14px;left:2.5px;top:2.5px;background:#fff;border-radius:50%;transition:.2s;}
+input:checked + .slider{background:var(--fire);}
+input:checked + .slider:before{transform:translateX(15px);}
+
+.panel-detalle{
+  bottom:16px;left:16px;padding:18px;width:280px;max-height:46%;overflow-y:auto;
+  display:none;
+}
+.panel-detalle.show{display:block;}
+.panel-detalle h3{font-size:1rem;margin-bottom:4px;}
+.badge-nuevo{
+  display:inline-block;background:var(--alert);color:#161616;font-family:var(--font-mono);
+  font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:5px;margin-left:6px;letter-spacing:.03em;
+}
+.detalle-row{display:flex;justify-content:space-between;font-size:.82rem;padding:5px 0;border-bottom:1px dashed var(--panel-border);}
+.detalle-row span:last-child{font-family:var(--font-mono);color:var(--text-muted);}
+
+.compass{
+  margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.compass-label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;}
+.compass svg{filter:drop-shadow(0 0 6px rgba(124,147,170,.35));}
+
+.legend{
+  bottom:16px;right:16px;padding:12px 16px;font-size:.78rem;color:var(--text-muted);
+  display:flex;flex-direction:column;gap:6px;
+}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+.toast{
+  position:absolute;top:16px;right:16px;z-index:950;
+  background:rgba(23,27,36,.95);border:1px solid var(--alert);border-radius:10px;
+  padding:12px 16px;font-size:.85rem;max-width:260px;display:none;
+  box-shadow:0 10px 24px rgba(0,0,0,.4);
+}
+.toast.show{display:block;animation:slidein .3s ease;}
+@keyframes slidein{from{transform:translateY(-8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+/* ---------- Error state focos ---------- */
+.error-focos-banner{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:900;
+  background:rgba(180,30,30,.15);border:1px solid rgba(200,80,80,.4);
+  color:#ff8080;font-family:var(--font-mono);font-size:.72rem;
+  padding:6px 14px;border-radius:20px;
+  display:none;align-items:center;gap:8px;white-space:nowrap;
+}
+.error-focos-banner button{
+  background:none;border:none;color:#ff8080;cursor:pointer;
+  text-decoration:underline;font-size:.72rem;
+}
+
+/* ---------- Contenido SEO bajo el mapa ---------- */
+.content{max-width:1100px;margin:0 auto;padding:60px 24px;}
+.content h1{font-size:1.9rem;margin-bottom:14px;}
+.content h2{font-size:1.6rem;margin-bottom:14px;}
+.content p{color:var(--text-muted);margin-bottom:14px;max-width:70ch;}
+.content .lead{color:var(--text);font-size:1.05rem;}
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb{
+  display:flex;align-items:center;gap:8px;
+  font-size:.78rem;color:var(--text-muted);margin-bottom:20px;
+}
+.breadcrumb a{color:var(--text-muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--text);}
+.breadcrumb .sep{opacity:0.4;}
+
+/* ---------- Grid comunidades (home) ---------- */
+.grid-cca{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:20px;
+}
+.grid-cca a{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);border-radius:10px;
+  padding:12px 14px;font-size:.85rem;text-decoration:none;color:var(--text);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.grid-cca a:hover{border-color:var(--fire);}
+.grid-cca .n{font-family:var(--font-mono);color:var(--fire-glow);font-size:.78rem;}
+
+/* ---------- FAQ ---------- */
+.faq{margin-top:16px;}
+.faq details{
+  background:var(--bg-elevated);border:1px solid var(--panel-border);border-radius:10px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.faq summary{cursor:pointer;font-weight:600;font-family:var(--font-display);font-size:.95rem;}
+.faq p{margin-top:8px;margin-bottom:0;}
+
+/* ---------- Slot AdSense ---------- */
+.ad-slot{
+  border:1px dashed var(--panel-border);border-radius:10px;
+  padding:26px;text-align:center;color:var(--text-muted);font-size:.78rem;
+  font-family:var(--font-mono);margin:34px 0;
+}
+
+/* ---------- Páginas de contenido (legal) ---------- */
+.content-page{max-width:760px;margin:0 auto;padding:60px 24px 80px;}
+.content-page h1{font-size:1.8rem;margin-bottom:8px;}
+.content-page .subtitle{color:var(--text-muted);font-size:.85rem;margin-bottom:40px;}
+.content-page h2{font-size:1.15rem;margin-top:36px;margin-bottom:10px;color:var(--fire-glow);}
+.content-page p{color:var(--text-muted);margin-bottom:12px;max-width:70ch;}
+.content-page ul{color:var(--text-muted);padding-left:20px;margin-bottom:12px;}
+.content-page ul li{margin-bottom:6px;}
+.content-page a{color:var(--fire);text-decoration:none;}
+.content-page a:hover{text-decoration:underline;}
+.content-page table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.82rem;}
+.content-page table th{text-align:left;padding:10px 12px;background:var(--bg-elevated);color:var(--text-muted);font-weight:600;}
+.content-page table td{padding:10px 12px;border-top:1px solid var(--panel-border);color:var(--text-muted);}
+.content-page .placeholder{
+  background:rgba(255,210,60,.08);border:1px solid rgba(255,210,60,.3);
+  border-radius:6px;padding:4px 8px;color:var(--alert);font-family:var(--font-mono);font-size:.8rem;
+}
+
+/* ---------- Pie de página ---------- */
+footer{
+  border-top:1px solid var(--panel-border);padding:30px 24px;
+  display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;
+  color:var(--text-muted);font-size:.8rem;max-width:1100px;margin:0 auto;
+}
+footer a{text-decoration:none;color:var(--text-muted);}
+footer a:hover{color:var(--text);}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;}
+
+/* ---------- Banner de cookies ---------- */
+#cookie-banner{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:2000;
+  background:rgba(23,27,36,.97);border-top:1px solid var(--panel-border);
+  padding:14px 24px;align-items:center;gap:16px;flex-wrap:wrap;
+  font-size:.82rem;color:var(--text-muted);justify-content:space-between;
+}
+.cookie-btn-reject{
+  background:transparent;border:1px solid var(--panel-border);color:var(--text-muted);
+  padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;
+}
+.cookie-btn-accept{
+  background:var(--fire);border:none;color:#161616;font-weight:600;
+  padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;
+}
+.cookie-btn-reject:hover{border-color:var(--text-muted);}
+.cookie-btn-accept:hover{background:#ff7054;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:760px){
+  .panel-filtros{width:150px;}
+  .panel-detalle{width:220px;}
+  .search-box input{min-width:120px;}
+  .content h1{font-size:1.4rem;}
+}

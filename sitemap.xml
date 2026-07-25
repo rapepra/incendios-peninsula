@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Páginas principales -->
+  <url><loc>https://www.incendiosenespana.es/</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
+
+  <!-- Páginas de comunidades autónomas (geo-SEO) -->
+  <url><loc>https://www.incendiosenespana.es/incendios/galicia</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/asturias</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/castilla-y-leon</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/andalucia</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/extremadura</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/cataluna</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/comunidad-valenciana</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/portugal-centro</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.incendiosenespana.es/incendios/portugal-norte</loc><lastmod>2026-07-25</lastmod><changefreq>hourly</changefreq><priority>0.7</priority></url>
+
+  <!-- Páginas legales -->
+  <url><loc>https://www.incendiosenespana.es/aviso-legal</loc><lastmod>2026-07-25</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://www.incendiosenespana.es/privacidad</loc><lastmod>2026-07-25</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://www.incendiosenespana.es/cookies</loc><lastmod>2026-07-25</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+</urlset>

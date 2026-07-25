@@ -1,0 +1,32 @@
+{
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 30,
+      "memory": 256
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+        { "key": "Cache-Control", "value": "public, s-maxage=900, stale-while-revalidate=1800" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/incendios/:region", "destination": "/incendios/:region/index.html" },
+    { "source": "/aviso-legal", "destination": "/aviso-legal/index.html" },
+    { "source": "/privacidad", "destination": "/privacidad/index.html" },
+    { "source": "/cookies", "destination": "/cookies/index.html" }
+  ]
+}

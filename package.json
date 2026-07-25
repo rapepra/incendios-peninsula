@@ -1,0 +1,12 @@
+{
+  "name": "incendios-es",
+  "version": "1.0.0",
+  "description": "Mapa de incendios forestales en España y Portugal — datos NASA FIRMS en tiempo real",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}
