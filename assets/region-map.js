@@ -194,40 +194,74 @@ document.getElementById('rango')?.addEventListener('change', e => {
 });
 
 /* ─── DETALLE DE FOCO + VIENTO REAL ─────────────────────────── */
+function cerrarDetalle() {
+  const panel = document.getElementById('panel-detalle');
+  if (panel) panel.classList.remove('show');
+  if (capaCono) map.removeLayer(capaCono);
+}
+
 async function mostrarDetalle(f, esNuevo) {
   const panel = document.getElementById('panel-detalle');
   if (!panel) return;
   panel.classList.add('show');
 
   document.getElementById('pd-title').innerHTML =
-    (f.sat || 'Foco activo') +
-    (esNuevo ? '<span class="badge-nuevo">NUEVO</span>' : '');
+    (f.sat || 'Foco activo') + (esNuevo ? '<span class="badge-nuevo">NUEVO</span>' : '');
   document.getElementById('pd-sat').textContent  = f.sat  || '—';
   document.getElementById('pd-conf').textContent = f.conf || '—';
   document.getElementById('pd-time').textContent = tiempoRelativo(f.ts);
-  document.getElementById('pd-coords').textContent =
-    `${f.lat.toFixed(4)}, ${f.lon.toFixed(4)}`;
+  document.getElementById('pd-coords').textContent = `${f.lat.toFixed(4)}, ${f.lon.toFixed(4)}`;
   document.getElementById('wind-info').textContent = 'cargando viento…';
   document.getElementById('compass-svg').innerHTML = '';
 
-  map.flyTo([f.lat, f.lon], 8, { duration: 0.6 });
+  const locEl = document.getElementById('pd-location');
+  if (locEl) locEl.textContent = 'cargando…';
+  const newsList = document.getElementById('foco-noticias-list');
+  if (newsList) newsList.innerHTML = '<span style="color:var(--text-muted);">buscando noticias…</span>';
 
+  map.flyTo([f.lat, f.lon], 9, { duration: 0.6 });
+
+  // Viento real (Open-Meteo)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${f.lat}&longitude=${f.lon}&current=wind_speed_10m,wind_direction_10m`)
+    .then(r => r.json())
+    .then(data => {
+      const vel = data.current.wind_speed_10m;
+      const dir = data.current.wind_direction_10m;
+      dibujarBrujula(dir, vel);
+      dibujarConoHumo(f, dir, vel);
+      document.getElementById('wind-info').textContent = `viento real: ${vel} km/h desde ${Math.round(dir)}°`;
+    })
+    .catch(() => {
+      document.getElementById('wind-info').textContent = 'no se pudo obtener viento';
+    });
+
+  // Reverse geocoding + Noticias contextuales del foco
   try {
-    const url =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${f.lat}&longitude=${f.lon}` +
-      `&current=wind_speed_10m,wind_direction_10m`;
-    const res  = await fetch(url);
-    const data = await res.json();
-    const vel  = data.current.wind_speed_10m;
-    const dir  = data.current.wind_direction_10m;
-    dibujarBrujula(dir, vel);
-    dibujarConoHumo(f, dir, vel);
-    document.getElementById('wind-info').textContent =
-      `viento real: ${vel} km/h desde ${Math.round(dir)}°`;
+    const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${f.lat}&lon=${f.lon}&zoom=10`);
+    const geoData = await geoRes.json();
+    const addr = geoData.address || {};
+    const lugar = addr.town || addr.city || addr.village || addr.municipality || addr.county || addr.state || '';
+    if (locEl) locEl.textContent = lugar ? `📍 ${lugar}` : `${f.lat.toFixed(2)}, ${f.lon.toFixed(2)}`;
+
+    const searchTerm = lugar || CFG.name || 'España';
+    const notRes = await fetch(`/api/noticias?q=${encodeURIComponent(searchTerm)}`);
+    const notData = await notRes.json();
+
+    if (newsList) {
+      if (notData.noticias && notData.noticias.length > 0) {
+        newsList.innerHTML = notData.noticias.slice(0, 3).map(n => `
+          <a href="${n.enlace}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;background:var(--bg-elevated);padding:7px 10px;border-radius:8px;border:1px solid var(--panel-border);display:block;transition:border-color .2s;">
+            <div style="font-weight:500;line-height:1.3;font-size:.78rem;">${n.titulo}</div>
+            <div style="font-size:.7rem;color:var(--text-muted);margin-top:3px;">${n.fuente ? n.fuente + ' · ' : ''}${tiempoRelativoNoticia(n.fecha)}</div>
+          </a>
+        `).join('');
+      } else {
+        newsList.innerHTML = `<span style="color:var(--text-muted);">Sin noticias recientes en ${searchTerm}.</span>`;
+      }
+    }
   } catch (err) {
-    document.getElementById('wind-info').textContent =
-      'no se pudo obtener el viento ahora mismo';
+    if (locEl) locEl.textContent = `${f.lat.toFixed(2)}, ${f.lon.toFixed(2)}`;
+    if (newsList) newsList.innerHTML = `<span style="color:var(--text-muted);">No se pudieron obtener noticias.</span>`;
   }
 }
 

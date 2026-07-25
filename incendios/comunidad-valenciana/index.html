@@ -114,7 +114,11 @@ gtag('consent', 'default', {
   <button class="fab fab-location" id="fab-location" aria-label="Mi ubicación" title="Mi ubicación">📍</button>
 
   <div class="floating-panel panel-detalle" id="panel-detalle">
-    <h3 id="pd-title">Foco seleccionado</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <h3 id="pd-title" style="margin-bottom:0;">Foco seleccionado</h3>
+      <button onclick="cerrarDetalle()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0 4px;" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="detalle-row"><span>Ubicación</span><span id="pd-location" style="color:var(--fire-glow);font-weight:500;">cargando…</span></div>
     <div class="detalle-row"><span>Satélite</span><span id="pd-sat">—</span></div>
     <div class="detalle-row"><span>Confianza</span><span id="pd-conf">—</span></div>
     <div class="detalle-row"><span>Detectado</span><span id="pd-time">—</span></div>
@@ -123,6 +127,16 @@ gtag('consent', 'default', {
       <span class="compass-label">Dirección estimada del humo</span>
       <div id="compass-svg"></div>
       <span class="mono" id="wind-info" style="font-size:.78rem;color:var(--text-muted);">cargando viento…</span>
+    </div>
+
+    <!-- Noticias de la zona para este foco -->
+    <div class="foco-noticias" id="foco-noticias-wrap" style="margin-top:12px;border-top:1px dashed var(--panel-border);padding-top:10px;">
+      <div style="font-size:.78rem;font-weight:600;color:var(--fire-glow);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+        <span>📰 Noticias sobre este foco</span>
+      </div>
+      <div id="foco-noticias-list" style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;">
+        <span style="color:var(--text-muted);">buscando noticias de la zona…</span>
+      </div>
     </div>
   </div>
 

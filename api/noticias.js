@@ -2,11 +2,12 @@
  * /api/noticias — Devuelve noticias recientes sobre incendios forestales
  * en España y Portugal desde Google News RSS (gratuito, sin API key).
  *
- * Cachea en memoria durante 30 minutos para evitar peticiones excesivas.
+ * Admite ?q=localidad_o_provincia para buscar noticias específicas de un foco.
+ * Cachea en memoria para evitar peticiones excesivas.
  */
 
-let cache = { data: null, ts: 0 };
-const CACHE_TTL = 30 * 60 * 1000; // 30 min
+const cache = {}; // { 'default': { data, ts }, 'ourense': { data, ts } }
+const CACHE_TTL = 15 * 60 * 1000; // 15 min
 
 /**
  * Parsea un feed RSS/XML simple sin dependencias externas.
@@ -23,11 +24,10 @@ function parsearRSS(xml) {
         || bloque.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
       return m ? m[1].trim() : '';
     };
-    // Fuente: <source url="...">Nombre</source>
     const sourceMatch = bloque.match(/<source[^>]*url="([^"]*)"[^>]*>([\s\S]*?)<\/source>/i);
 
     items.push({
-      titulo: get('title').replace(/<[^>]+>/g, ''), // limpiar posible HTML
+      titulo: get('title').replace(/<[^>]+>/g, ''),
       enlace: get('link'),
       fecha: get('pubDate'),
       fuente: sourceMatch ? sourceMatch[2].replace(/<[^>]+>/g, '').trim() : '',
@@ -40,19 +40,26 @@ function parsearRSS(xml) {
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  const queryParam = (req.query?.q || '').trim();
+  const cacheKey = queryParam ? queryParam.toLowerCase() : 'default';
+
   // Devolver caché si aún es válido
-  if (cache.data && Date.now() - cache.ts < CACHE_TTL) {
-    return res.status(200).json(cache.data);
+  if (cache[cacheKey] && Date.now() - cache[cacheKey].ts < CACHE_TTL) {
+    return res.status(200).json(cache[cacheKey].data);
   }
 
-  const queries = [
-    'incendios+forestales+España',
-    'incêndios+florestais+Portugal',
-    'incendio+forestal+hoy',
-  ];
+  let queries = [];
+  if (queryParam) {
+    queries = [`incendio+${encodeURIComponent(queryParam)}`, `incendios+${encodeURIComponent(queryParam)}`];
+  } else {
+    queries = [
+      'incendios+forestales+España',
+      'incêndios+florestais+Portugal',
+      'incendio+forestal+hoy',
+    ];
+  }
 
   try {
-    // Pedir varias búsquedas en paralelo y unificar resultados
     const promises = queries.map(q =>
       fetch(`https://news.google.com/rss/search?q=${q}&hl=es&gl=ES&ceid=ES:es`)
         .then(r => r.text())
@@ -60,7 +67,6 @@ module.exports = async function handler(req, res) {
     );
     const xmls = await Promise.all(promises);
 
-    // Unificar, deduplicar por enlace, y ordenar por fecha
     const allItems = xmls.flatMap(xml => parsearRSS(xml));
     const seen = new Set();
     const unicos = [];
@@ -71,19 +77,19 @@ module.exports = async function handler(req, res) {
         unicos.push(item);
       }
     }
-    // Ordenar más reciente primero
     unicos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
-    // Limitar a 12 noticias
-    const noticias = unicos.slice(0, 12);
+    const limit = queryParam ? 5 : 12;
+    const noticias = unicos.slice(0, limit);
 
     const payload = {
+      query: queryParam || null,
       noticias,
       total: noticias.length,
       ts: new Date().toISOString(),
     };
 
-    cache = { data: payload, ts: Date.now() };
+    cache[cacheKey] = { data: payload, ts: Date.now() };
     return res.status(200).json(payload);
   } catch (err) {
     return res.status(500).json({
@@ -92,4 +98,4 @@ module.exports = async function handler(req, res) {
       detail: err.message,
     });
   }
-}
+};
