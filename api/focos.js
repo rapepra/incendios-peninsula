@@ -203,6 +203,21 @@ module.exports = async function handler(req, res) {
       throw new Error(`FIRMS devolvió HTTP ${response.status}. Respuesta: ${body.slice(0, 200)}`);
     }
     csv = await response.text();
+
+    // ── Si dias === 1 y la respuesta está vacía (solo cabecera, común de madrugada UTC),
+    // ── hacer fallback automático a dias = 2 para mostrar siempre los focos de las últimas 24-48h.
+    if (dias === 1 && csv.trim().split('\n').length <= 1) {
+      const fallbackUrl =
+        `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${MAP_KEY}` +
+        `/VIIRS_SNPP_NRT/-9.5,36,3.5,44/2`;
+      const fbRes = await fetch(fallbackUrl);
+      if (fbRes.ok) {
+        const fbCsv = await fbRes.text();
+        if (fbCsv.trim().split('\n').length > 1) {
+          csv = fbCsv;
+        }
+      }
+    }
   } catch (err) {
     if (err.name === 'AbortError') {
       return res.status(504).json({
