@@ -203,9 +203,9 @@ input:checked + .slider:before{transform:translateX(15px);}
 
 /* ---------- Slot AdSense (CLS-safe) ---------- */
 .ad-slot{
-  border:1px dashed var(--panel-border);border-radius:10px;
+  border:none;border-radius:10px;
   text-align:center;color:var(--text-muted);font-size:.78rem;
-  font-family:var(--font-mono);margin:34px 0;
+  font-family:var(--font-mono);margin:24px 0;
   min-height:90px;display:flex;align-items:center;justify-content:center;
   overflow:hidden;
 }
