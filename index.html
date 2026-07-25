@@ -398,38 +398,40 @@ footer a:hover{color:var(--text);}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 /* ============================================================
-   MAPA BASE
+   MAPA BASE — CARTO Dark Matter
    ============================================================ */
 const map = L.map('map', { zoomControl: true, attributionControl: true })
   .setView([40.2, -4.5], 6);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CARTO',
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
   subdomains: 'abcd',
   maxZoom: 12
 }).addTo(map);
 
 /* ============================================================
    CAPA REAL DE INCENDIOS — NASA GIBS (VIIRS / MODIS)
-   Servicio público, sin API key. Actualiza la fecha (TIME) cada carga.
-   Doc: https://nasa-gibs.github.io/gibs-api-docs/
    ============================================================ */
-const hoy = new Date().toISOString().slice(0, 10);
+const fechaAyer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
 const capaViirs = L.tileLayer(
-  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/${hoy}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
-  { maxZoom: 9, maxNativeZoom: 9, opacity: 0.95, attribution: 'NASA GIBS / VIIRS' }
-).addTo(map);
-
-const capaModis = L.tileLayer(
-  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Thermal_Anomalies_All/default/${hoy}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png`,
-  { maxZoom: 7, maxNativeZoom: 7, opacity: 0.9, attribution: 'NASA GIBS / MODIS' }
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_NOAA20_Thermal_Anomalies_375m_Day/default/${fechaAyer}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.mvt`,
+  { maxZoom: 8, maxNativeZoom: 8, opacity: 0.85, attribution: 'NASA GIBS / VIIRS' }
 );
 
-document.getElementById('cap-viirs').addEventListener('change', e =>
-  e.target.checked ? map.addLayer(capaViirs) : map.removeLayer(capaViirs));
-document.getElementById('cap-modis').addEventListener('change', e =>
-  e.target.checked ? map.addLayer(capaModis) : map.removeLayer(capaModis));
+const capaModis = L.tileLayer(
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Thermal_Anomalies_All/default/${fechaAyer}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.mvt`,
+  { maxZoom: 7, maxNativeZoom: 7, opacity: 0.85, attribution: 'NASA GIBS / MODIS' }
+);
+
+const capViirsEl = document.getElementById('cap-viirs');
+if (capViirsEl) {
+  capViirsEl.addEventListener('change', e => e.target.checked ? map.addLayer(capaViirs) : map.removeLayer(capaViirs));
+}
+const capModisEl = document.getElementById('cap-modis');
+if (capModisEl) {
+  capModisEl.addEventListener('change', e => e.target.checked ? map.addLayer(capaModis) : map.removeLayer(capaModis));
+}
 
 /* ============================================================
    PUNTOS INTERACTIVOS — DATOS REALES (NASA FIRMS via /api/focos)

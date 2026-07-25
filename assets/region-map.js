@@ -30,28 +30,28 @@ const CFG = window.REGION_CONFIG || {
 const map = L.map('map', { zoomControl: true, attributionControl: true })
   .setView(CFG.center, CFG.zoom);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap &copy; CARTO',
   subdomains: 'abcd',
   maxZoom: 12
 }).addTo(map);
 
 /* ─── CAPAS NASA GIBS ─────────────────────────────────────── */
-const hoy = new Date().toISOString().slice(0, 10);
+const fechaAyer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
 const capaViirs = L.tileLayer(
-  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/${hoy}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
-  { maxZoom: 9, maxNativeZoom: 9, opacity: 0.95, attribution: 'NASA GIBS / VIIRS' }
-).addTo(map);
-
-const capaModis = L.tileLayer(
-  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Thermal_Anomalies_All/default/${hoy}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png`,
-  { maxZoom: 7, maxNativeZoom: 7, opacity: 0.9, attribution: 'NASA GIBS / MODIS' }
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_NOAA20_Thermal_Anomalies_375m_Day/default/${fechaAyer}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.mvt`,
+  { maxZoom: 8, maxNativeZoom: 8, opacity: 0.85, attribution: 'NASA GIBS / VIIRS' }
 );
 
-document.getElementById('cap-viirs').addEventListener('change', e =>
+const capaModis = L.tileLayer(
+  `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Thermal_Anomalies_All/default/${fechaAyer}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.mvt`,
+  { maxZoom: 7, maxNativeZoom: 7, opacity: 0.85, attribution: 'NASA GIBS / MODIS' }
+);
+
+document.getElementById('cap-viirs')?.addEventListener('change', e =>
   e.target.checked ? map.addLayer(capaViirs) : map.removeLayer(capaViirs));
-document.getElementById('cap-modis').addEventListener('change', e =>
+document.getElementById('cap-modis')?.addEventListener('change', e =>
   e.target.checked ? map.addLayer(capaModis) : map.removeLayer(capaModis));
 
 /* ─── PUNTOS INTERACTIVOS — DATOS REALES ────────────────────── */
